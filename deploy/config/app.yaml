@@ -1,0 +1,23 @@
+# environment
+env: dev
+
+log:
+  level: "debug"
+  environment: dev
+  format: "console"
+  app_id: ptcg_trader
+
+database:
+  debug: true
+  host: localhost
+  port: 5432
+  username: local
+  password: local
+  dbname: ptcg
+  type: postgres
+  search_path: "trader"
+  ssl_enable: false
+
+http:
+  mode: "debug"
+  address: ":17420"
