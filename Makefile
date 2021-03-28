@@ -3,8 +3,40 @@ MAKEFLAGS += -j5
 PRJ_PATH = $(PWD)
 GOTEST = $(go test -v)
 
+.PHONY: server build.docker swagger.server swagger.gen
+
+
+##############################
+# run service
+##############################
+
 server:
 	PROJ_HOME=$(CURDIR) CONFIG_NAME=app go run main.go $@
 
-build.docker:
+docker.build:
 	docker build . -f deploy/docker/trader.dockerfile
+
+
+##############################
+# swagger api document
+##############################
+
+swagger.server:
+	docker run -d --rm --name ptcg_swagger -p 8088:8080 -e SWAGGER_JSON=/documents/swagger.json -v $(PRJ_PATH)/documents:/documents swaggerapi/swagger-ui
+
+SWAGGER_FILE := documents/swagger.json
+API_HEADER_FILE := $(PRJ_PATH)/pkg/delivery/restful/router.go
+API_PATH := $(PRJ_PATH)/pkg
+swagger.gen:
+	# go get -u github.com/mikunalpha/goas
+	goas --module-path . --main-file-path $(API_HEADER_FILE) --handler-path $(API_PATH) --output $(SWAGGER_FILE)
+
+
+
+##############################
+# mocking test data
+##############################
+
+mock.gen.repo:
+	# go get github.com/vektra/mockery/.../
+	mockery -dir pkg/repository -name Repositorier -filename mock_repository.go --structname MockRepository -output test/mocks

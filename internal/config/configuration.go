@@ -12,7 +12,7 @@ var config Configuration
 type Configuration struct {
 	fx.Out
 
-	Env      string
+	Env      string `yaml:"env" env:"ENVIRONMENT" default:"product"`
 	Log      LogConfig
 	Database DatabaseConfig
 	HTTP     HTTPConfig

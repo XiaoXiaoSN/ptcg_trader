@@ -9,8 +9,21 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgconn"
+	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
+
+// some default constant
+const (
+	DefaultPerPage int = 50
+)
+
+// GORMRepoParams define params for create repository
+type GORMRepoParams struct {
+	fx.In
+
+	DB *gorm.DB
+}
 
 type _repository struct {
 	db              *gorm.DB
@@ -18,9 +31,9 @@ type _repository struct {
 }
 
 // NewRepository support DI tool to create a new gorm repository instance
-func NewRepository(driver, dsn string, db *gorm.DB) (repository.Repositorier, error) {
+func NewRepository(param GORMRepoParams) (repository.Repositorier, error) {
 	return &_repository{
-		db: db,
+		db: param.DB,
 	}, nil
 }
 

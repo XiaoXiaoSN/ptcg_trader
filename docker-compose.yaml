@@ -12,3 +12,12 @@ services:
       # - ./initdb/sql:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
+    
+  swagger:
+    image: swaggerapi/swagger-ui
+    environment: 
+      SWAGGER_JSON: "/documents/swagger.json"
+    volumes:
+      - ./documents:/documents
+    ports:
+      - 8080:8080

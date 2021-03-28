@@ -1,0 +1,266 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PTCG Trader API v1",
+    "description": "PTCG Trader API",
+    "contact": {
+      "name": "Xiao.Xiao",
+      "email": "freedom85812@gmail.com"
+    },
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://www.fake.com",
+      "description": " FakeServerHost"
+    }
+  ],
+  "paths": {
+    "/apis/v1/items": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "商品列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.listItemResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "不正確的查詢參數",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsBadRequestResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "關於商品們"
+        ],
+        "summary": "List Items",
+        "description": " 列表可以買賣的商品清單",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數 (default: 1)",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "頁數 (default: 1)"
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "一頁顯示幾筆 (default: 50)",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "一頁顯示幾筆 (default: 50)"
+            }
+          }
+        ]
+      }
+    },
+    "/apis/v1/items/{itemID}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "商品資訊",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.getItemResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "不正確的查詢參數",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsBadRequestResp"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "查詢的資源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsNotFoundResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "關於商品們"
+        ],
+        "summary": "getItemEndpoint",
+        "description": " 取得指定 商品ID 的商品",
+        "parameters": [
+          {
+            "name": "itemID",
+            "in": "path",
+            "description": "商品ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "商品ID"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ptcg_trader.pkg.delivery.restful.Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "per_page": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "total_page": {
+            "type": "integer"
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.StautsBadRequestResp": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "400000"
+          },
+          "message": {
+            "type": "string",
+            "example": "Invailed Input"
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.StautsNotFoundResp": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "404001"
+          },
+          "message": {
+            "type": "string",
+            "example": "Resource Not Found"
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.getItemResp": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.model.Item"
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.listItemResp": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.listItemRespMeta"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "image_url": {
+                  "type": "string"
+                },
+                "creator_id": {
+                  "type": "integer"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.listItemRespMeta": {
+        "type": "object",
+        "properties": {
+          "pagination": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.Pagination"
+          }
+        }
+      },
+      "ptcg_trader.pkg.model.Item": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "creator_id": {
+            "type": "integer"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "AuthorizationHeader": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Inuput your token"
+      }
+    }
+  },
+  "security": [
+    {
+      "AuthorizationHeader": []
+    }
+  ]
+}

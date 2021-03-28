@@ -10,7 +10,7 @@ import (
 
 // notFoundHandler responds not found response.
 func notFoundHandler(c echo.Context) error {
-	return c.JSON(http.StatusNotFound, errors.ErrPageNotFound)
+	return c.JSON(http.StatusNotFound, errors.GetHTTPError(errors.ErrPageNotFound))
 }
 
 // httpErrorHandler responds error response according to given error form echo service.
@@ -31,4 +31,5 @@ func httpErrorHandler(err error, c echo.Context) {
 	httpErr := errors.GetHTTPError(causeErr)
 
 	_ = c.JSON(httpErr.Status, httpErr)
+	return
 }

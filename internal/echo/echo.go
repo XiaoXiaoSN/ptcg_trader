@@ -3,12 +3,10 @@ package echo
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"ptcg_trader/internal/config"
 	"ptcg_trader/internal/echo/middleware"
 
-	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"go.uber.org/fx"
@@ -42,8 +40,8 @@ func NewEchoEngine(cfg config.HTTPConfig) *echo.Echo {
 	e.Use(middleware.ErrMiddleware)
 
 	// Enable metrics middleware
-	p := prometheus.NewPrometheus("echo", nil)
-	p.Use(e)
+	// p := prometheus.NewPrometheus("echo", nil)
+	// p.Use(e)
 
 	// register default route
 	RegisterDefaultRoute(e)
@@ -78,7 +76,6 @@ func StartEcho(s config.HTTPConfig, lc fx.Lifecycle) *echo.Echo {
 // RegisterDefaultRoute provide default handler
 func RegisterDefaultRoute(e *echo.Echo) {
 	e.GET("/ping", func(c echo.Context) error {
-		time.Sleep(10 * time.Second)
 		return c.String(http.StatusOK, "pong!!!")
 	})
 

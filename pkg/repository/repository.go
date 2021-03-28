@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"ptcg_trader/pkg/model"
 )
 
 // Repositorier ...
@@ -22,5 +23,10 @@ type Repositorier interface {
 
 // TraderRepositorier define PTCG trader service interface
 type TraderRepositorier interface {
-	//
+	// Get target item by item ID
+	GetItem(ctx context.Context, query model.ItemQuery) (model.Item, error)
+	// counting total count of items
+	CountItems(ctx context.Context, query model.ItemQuery) (int64, error)
+	// List items by query condition
+	ListItems(ctx context.Context, query model.ItemQuery) ([]model.Item, error)
 }
