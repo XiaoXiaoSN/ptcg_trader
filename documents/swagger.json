@@ -122,24 +122,249 @@
           }
         ]
       }
+    },
+    "/apis/v1/orders": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "訂單列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.listOrderResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "不正確的查詢參數",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsBadRequestResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "關於訂單們"
+        ],
+        "summary": "List Orders",
+        "description": " 列表下定買單、賣單的訂單們",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數 (default: 1)",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "頁數 (default: 1)"
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "一頁顯示幾筆 (default: 50)",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "一頁顯示幾筆 (default: 50)"
+            }
+          }
+        ]
+      },
+      "post": {
+        "responses": {
+          "200": {
+            "description": "訂單資訊",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.createOrderResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "不正確的查詢參數",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsBadRequestResp"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "查詢的資源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsNotFoundResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "關於訂單們"
+        ],
+        "summary": "getOrderEndpoint",
+        "description": " 建立訂單",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.createOrderReq"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/apis/v1/orders/{orderID}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "訂單資訊",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.getOrderResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "不正確的查詢參數",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsBadRequestResp"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "查詢的資源不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsNotFoundResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "關於訂單們"
+        ],
+        "summary": "getOrderEndpoint",
+        "description": " 取得指定 訂單ID 的訂單",
+        "parameters": [
+          {
+            "name": "orderID",
+            "in": "path",
+            "description": "訂單ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "訂單ID"
+            }
+          }
+        ]
+      }
+    },
+    "/apis/v1/transactions": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "交易紀錄列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.listTransactionResp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "不正確的查詢參數",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.StautsBadRequestResp"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "關於交易紀錄們"
+        ],
+        "summary": "List Transactions",
+        "description": " 列表交易紀錄們",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "頁數 (default: 1)",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "頁數 (default: 1)"
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "一頁顯示幾筆 (default: 50)",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "一頁顯示幾筆 (default: 50)"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
+      "": {},
+      "github.com.shopspring.decimal.Decimal": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/"
+          },
+          "exp": {
+            "type": "integer"
+          }
+        }
+      },
       "ptcg_trader.pkg.delivery.restful.Pagination": {
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1
           },
           "per_page": {
-            "type": "integer"
+            "type": "integer",
+            "example": 50
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "example": 80
           },
           "total_page": {
-            "type": "integer"
+            "type": "integer",
+            "example": 2
           }
         }
       },
@@ -169,12 +394,47 @@
           }
         }
       },
+      "ptcg_trader.pkg.delivery.restful.createOrderReq": {
+        "type": "object",
+        "properties": {
+          "item_id": {
+            "type": "integer"
+          },
+          "created_id": {
+            "type": "integer"
+          },
+          "order_type": {
+            "$ref": "#/components/schemas/ptcg_trader.pkg.model.OrderType"
+          },
+          "price": {
+            "type": "string"
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.createOrderResp": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.model.Order"
+          }
+        }
+      },
       "ptcg_trader.pkg.delivery.restful.getItemResp": {
         "type": "object",
         "properties": {
           "data": {
             "type": "object",
             "$ref": "#/components/schemas/ptcg_trader.pkg.model.Item"
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.getOrderResp": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.model.Order"
           }
         }
       },
@@ -224,6 +484,106 @@
           }
         }
       },
+      "ptcg_trader.pkg.delivery.restful.listOrderResp": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.listOrderRespMeta"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "item_id": {
+                  "type": "integer"
+                },
+                "created_id": {
+                  "type": "integer"
+                },
+                "order_type": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.model.OrderType"
+                },
+                "price": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/github.com.shopspring.decimal.Decimal"
+                },
+                "status": {
+                  "$ref": "#/components/schemas/ptcg_trader.pkg.model.OrderStatus"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.listOrderRespMeta": {
+        "type": "object",
+        "properties": {
+          "pagination": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.Pagination"
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.listTransactionResp": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.listTransactionRespMeta"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "buy_order_id": {
+                  "type": "integer"
+                },
+                "sell_order_id": {
+                  "type": "integer"
+                },
+                "final_price": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/github.com.shopspring.decimal.Decimal"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ptcg_trader.pkg.delivery.restful.listTransactionRespMeta": {
+        "type": "object",
+        "properties": {
+          "pagination": {
+            "type": "object",
+            "$ref": "#/components/schemas/ptcg_trader.pkg.delivery.restful.Pagination"
+          }
+        }
+      },
       "ptcg_trader.pkg.model.Item": {
         "type": "object",
         "properties": {
@@ -248,7 +608,41 @@
             "format": "date-time"
           }
         }
-      }
+      },
+      "ptcg_trader.pkg.model.Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "item_id": {
+            "type": "integer"
+          },
+          "created_id": {
+            "type": "integer"
+          },
+          "order_type": {
+            "$ref": "#/components/schemas/ptcg_trader.pkg.model.OrderType"
+          },
+          "price": {
+            "type": "object",
+            "$ref": "#/components/schemas/github.com.shopspring.decimal.Decimal"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ptcg_trader.pkg.model.OrderStatus"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ptcg_trader.pkg.model.OrderStatus": {},
+      "ptcg_trader.pkg.model.OrderType": {}
     },
     "securitySchemes": {
       "AuthorizationHeader": {

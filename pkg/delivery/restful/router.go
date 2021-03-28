@@ -19,6 +19,12 @@ func SetRoutes(e *echo.Echo, h *Handler) {
 	{
 		gAPIv1.GET("/items", h.listItemEndpoint)
 		gAPIv1.GET("/items/:itemID", h.getItemEndpoint)
+
+		gAPIv1.GET("/orders", h.listOrderEndpoint)
+		gAPIv1.GET("/orders/:orderID", h.getOrderEndpoint)
+		gAPIv1.POST("/orders", h.createOrderEndpoint)
+
+		gAPIv1.GET("/transactions", h.listTransactionEndpoint)
 	}
 }
 

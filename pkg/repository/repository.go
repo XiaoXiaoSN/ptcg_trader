@@ -29,4 +29,24 @@ type TraderRepositorier interface {
 	CountItems(ctx context.Context, query model.ItemQuery) (int64, error)
 	// List items by query condition
 	ListItems(ctx context.Context, query model.ItemQuery) ([]model.Item, error)
+
+	// Get target order by Order ID
+	GetOrder(ctx context.Context, query model.OrderQuery) (model.Order, error)
+	// counting total count of orders
+	CountOrders(ctx context.Context, query model.OrderQuery) (int64, error)
+	// List orders by query condition
+	ListOrders(ctx context.Context, query model.OrderQuery) ([]model.Order, error)
+	// Create order
+	CreateOrder(ctx context.Context, order *model.Order) error
+	// Update orders by query condition
+	UpdateOrders(ctx context.Context, query model.OrderQuery, updates model.OrderUpdates) error
+
+	// Get target transaction by transaction ID
+	GetTransaction(ctx context.Context, query model.TransactionQuery) (model.Transaction, error)
+	// counting total count of transactions
+	CountTransactions(ctx context.Context, query model.TransactionQuery) (int64, error)
+	// List transactions by query condition
+	ListTransactions(ctx context.Context, query model.TransactionQuery) ([]model.Transaction, error)
+	// Create transaction
+	CreateTransaction(ctx context.Context, tx *model.Transaction) error
 }

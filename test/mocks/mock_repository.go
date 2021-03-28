@@ -81,6 +81,76 @@ func (_m *MockRepository) CountItems(ctx context.Context, query model.ItemQuery)
 	return r0, r1
 }
 
+// CountOrders provides a mock function with given fields: ctx, query
+func (_m *MockRepository) CountOrders(ctx context.Context, query model.OrderQuery) (int64, error) {
+	ret := _m.Called(ctx, query)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context, model.OrderQuery) int64); ok {
+		r0 = rf(ctx, query)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, model.OrderQuery) error); ok {
+		r1 = rf(ctx, query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CountTransactions provides a mock function with given fields: ctx, query
+func (_m *MockRepository) CountTransactions(ctx context.Context, query model.TransactionQuery) (int64, error) {
+	ret := _m.Called(ctx, query)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(context.Context, model.TransactionQuery) int64); ok {
+		r0 = rf(ctx, query)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, model.TransactionQuery) error); ok {
+		r1 = rf(ctx, query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateOrder provides a mock function with given fields: ctx, order
+func (_m *MockRepository) CreateOrder(ctx context.Context, order *model.Order) error {
+	ret := _m.Called(ctx, order)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Order) error); ok {
+		r0 = rf(ctx, order)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// CreateTransaction provides a mock function with given fields: ctx, order
+func (_m *MockRepository) CreateTransaction(ctx context.Context, order *model.Transaction) error {
+	ret := _m.Called(ctx, order)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Transaction) error); ok {
+		r0 = rf(ctx, order)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetItem provides a mock function with given fields: ctx, query
 func (_m *MockRepository) GetItem(ctx context.Context, query model.ItemQuery) (model.Item, error) {
 	ret := _m.Called(ctx, query)
@@ -94,6 +164,48 @@ func (_m *MockRepository) GetItem(ctx context.Context, query model.ItemQuery) (m
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, model.ItemQuery) error); ok {
+		r1 = rf(ctx, query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetOrder provides a mock function with given fields: ctx, query
+func (_m *MockRepository) GetOrder(ctx context.Context, query model.OrderQuery) (model.Order, error) {
+	ret := _m.Called(ctx, query)
+
+	var r0 model.Order
+	if rf, ok := ret.Get(0).(func(context.Context, model.OrderQuery) model.Order); ok {
+		r0 = rf(ctx, query)
+	} else {
+		r0 = ret.Get(0).(model.Order)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, model.OrderQuery) error); ok {
+		r1 = rf(ctx, query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetTransaction provides a mock function with given fields: ctx, query
+func (_m *MockRepository) GetTransaction(ctx context.Context, query model.TransactionQuery) (model.Transaction, error) {
+	ret := _m.Called(ctx, query)
+
+	var r0 model.Transaction
+	if rf, ok := ret.Get(0).(func(context.Context, model.TransactionQuery) model.Transaction); ok {
+		r0 = rf(ctx, query)
+	} else {
+		r0 = ret.Get(0).(model.Transaction)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, model.TransactionQuery) error); ok {
 		r1 = rf(ctx, query)
 	} else {
 		r1 = ret.Error(1)
@@ -125,6 +237,52 @@ func (_m *MockRepository) ListItems(ctx context.Context, query model.ItemQuery) 
 	return r0, r1
 }
 
+// ListOrders provides a mock function with given fields: ctx, query
+func (_m *MockRepository) ListOrders(ctx context.Context, query model.OrderQuery) ([]model.Order, error) {
+	ret := _m.Called(ctx, query)
+
+	var r0 []model.Order
+	if rf, ok := ret.Get(0).(func(context.Context, model.OrderQuery) []model.Order); ok {
+		r0 = rf(ctx, query)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Order)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, model.OrderQuery) error); ok {
+		r1 = rf(ctx, query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListTransactions provides a mock function with given fields: ctx, query
+func (_m *MockRepository) ListTransactions(ctx context.Context, query model.TransactionQuery) ([]model.Transaction, error) {
+	ret := _m.Called(ctx, query)
+
+	var r0 []model.Transaction
+	if rf, ok := ret.Get(0).(func(context.Context, model.TransactionQuery) []model.Transaction); ok {
+		r0 = rf(ctx, query)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Transaction)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, model.TransactionQuery) error); ok {
+		r1 = rf(ctx, query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Rollback provides a mock function with given fields:
 func (_m *MockRepository) Rollback() error {
 	ret := _m.Called()
@@ -146,6 +304,20 @@ func (_m *MockRepository) Transaction(ctx context.Context, f func(context.Contex
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, func(context.Context, repository.Repositorier) error) error); ok {
 		r0 = rf(ctx, f)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateOrders provides a mock function with given fields: ctx, query, updates
+func (_m *MockRepository) UpdateOrders(ctx context.Context, query model.OrderQuery, updates model.OrderUpdates) error {
+	ret := _m.Called(ctx, query, updates)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, model.OrderQuery, model.OrderUpdates) error); ok {
+		r0 = rf(ctx, query, updates)
 	} else {
 		r0 = ret.Error(0)
 	}

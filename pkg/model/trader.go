@@ -36,6 +36,19 @@ type Order struct {
 	CreatedAt time.Time       `json:"created_at"  gorm:"column:created_at"`
 }
 
+// OrderQuery ...
+type OrderQuery struct {
+	ID *int64 `json:"id" gorm:"column:id"`
+
+	PerPage int `json:"per_page" gorm:"-"`
+	Page    int `json:"page" gorm:"-"`
+}
+
+// OrderUpdates ...
+type OrderUpdates struct {
+	Status OrderStatus `json:"status"  gorm:"column:status"`
+}
+
 // Transaction is the result of orders matching
 type Transaction struct {
 	ID          int64           `json:"id"  gorm:"column:id"`
@@ -44,4 +57,12 @@ type Transaction struct {
 	FinalPrice  decimal.Decimal `json:"final_price"  gorm:"column:final_price"`
 	UpdatedAt   time.Time       `json:"updated_at"  gorm:"column:updated_at"`
 	CreatedAt   time.Time       `json:"created_at"  gorm:"column:created_at"`
+}
+
+// TransactionQuery ...
+type TransactionQuery struct {
+	ID *int64 `json:"id" gorm:"column:id"`
+
+	PerPage int `json:"per_page" gorm:"-"`
+	Page    int `json:"page" gorm:"-"`
 }
