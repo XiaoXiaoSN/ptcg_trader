@@ -400,9 +400,6 @@
           "item_id": {
             "type": "integer"
           },
-          "created_id": {
-            "type": "integer"
-          },
           "order_type": {
             "$ref": "#/components/schemas/ptcg_trader.pkg.model.OrderType"
           },
@@ -502,7 +499,7 @@
                 "item_id": {
                   "type": "integer"
                 },
-                "created_id": {
+                "creator_id": {
                   "type": "integer"
                 },
                 "order_type": {
@@ -552,10 +549,10 @@
                 "id": {
                   "type": "integer"
                 },
-                "buy_order_id": {
+                "make_order_id": {
                   "type": "integer"
                 },
-                "sell_order_id": {
+                "take_order_id": {
                   "type": "integer"
                 },
                 "final_price": {
@@ -618,7 +615,7 @@
           "item_id": {
             "type": "integer"
           },
-          "created_id": {
+          "creator_id": {
             "type": "integer"
           },
           "order_type": {

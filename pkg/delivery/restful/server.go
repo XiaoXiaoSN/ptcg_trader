@@ -3,6 +3,7 @@ package restful
 import (
 	"net/http"
 
+	"ptcg_trader/internal/ctxutil"
 	"ptcg_trader/internal/errors"
 	"ptcg_trader/pkg/model"
 
@@ -157,7 +158,6 @@ func (h Handler) getOrderEndpoint(c echo.Context) (err error) {
 
 type createOrderReq struct {
 	ItemID    int64           `json:"item_id" gorm:"column:item_id"`
-	CreatedID int64           `json:"created_id" gorm:"column:created_id"`
 	OrderType model.OrderType `json:"order_type" gorm:"column:order_type"`
 	Price     string          `json:"price" gorm:"column:price"`
 }
@@ -171,7 +171,7 @@ type createOrderResp struct {
 // @
 // @Param  reqBody  body    createOrderReq  true   "建立訂單資訊"
 // @
-// @Success  200  object  createOrderResp          "訂單資訊"
+// @Success  200  object  createOrderResp       "訂單資訊"
 // @Failure  400  object  StautsBadRequestResp  "不正確的查詢參數"
 // @Failure  404  object  StautsNotFoundResp    "查詢的資源不存在"
 // @
@@ -200,9 +200,14 @@ func (h Handler) createOrderEndpoint(c echo.Context) (err error) {
 		return errors.Wrap(errors.ErrBadRequest, "order Price is greater then 10")
 	}
 
+	creatorID, err := ctxutil.IdentityIDFromCtx(ctx)
+	if err != nil {
+		return err
+	}
+
 	order := &model.Order{
 		ItemID:    req.ItemID,
-		CreatedID: req.CreatedID,
+		CreatorID: creatorID,
 		OrderType: req.OrderType,
 		Price:     orderPrice,
 		Status:    model.OrderStatusProgress,

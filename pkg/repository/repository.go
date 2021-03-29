@@ -8,6 +8,7 @@ import (
 // Repositorier ...
 type Repositorier interface {
 	TraderRepositorier
+	MatcherRepositorier
 
 	// Begin begins a transaction
 	Begin(ctx context.Context) Repositorier
@@ -49,4 +50,10 @@ type TraderRepositorier interface {
 	ListTransactions(ctx context.Context, query model.TransactionQuery) ([]model.Transaction, error)
 	// Create transaction
 	CreateTransaction(ctx context.Context, tx *model.Transaction) error
+}
+
+// MatcherRepositorier define PTCG matcher service interface
+type MatcherRepositorier interface {
+	// MatchOrders check that are there two orders can be matched
+	MatchOrders(ctx context.Context, order *model.Order) (model.Order, error)
 }

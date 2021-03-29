@@ -13,7 +13,7 @@ CREATE TABLE orders
 (
     id         bigint                  NOT NULL CONSTRAINT orders_pk PRIMARY KEY,
     item_id    bigint    DEFAULT 0     NOT NULL,
-    created_id bigint    DEFAULT 0     NOT NULL,
+    creator_id bigint    DEFAULT 0     NOT NULL,
     order_type smallint  DEFAULT 0     NOT NULL,
     price      bigint    DEFAULT 0     NOT NULL,
     status     smallint  DEFAULT 0     NOT NULL,
@@ -35,8 +35,8 @@ CREATE TABLE users
 CREATE TABLE transactions
 (
     id            bigint                  NOT NULL CONSTRAINT transactions_p PRIMARY KEY,
-    buy_order_id  bigint    DEFAULT 0     NOT NULL,
-    sell_order_id bigint    DEFAULT 0     NOT NULL,
+    make_order_id bigint    DEFAULT 0     NOT NULL,
+    take_order_id bigint    DEFAULT 0     NOT NULL,
     final_price   bigint    DEFAULT 0     NOT NULL,
     updated_at    timestamp DEFAULT now() NOT NULL,
     created_at    timestamp DEFAULT now() NOT NULL

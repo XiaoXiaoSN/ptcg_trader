@@ -11,11 +11,17 @@ import (
 	"github.com/jackc/pgconn"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // some default constant
 const (
 	DefaultPerPage int = 50
+)
+
+// define some useful gorm clauses
+var (
+	selectForUpdate clause.Expression = clause.Locking{Strength: "UPDATE"}
 )
 
 // RepoParams define params for create repository

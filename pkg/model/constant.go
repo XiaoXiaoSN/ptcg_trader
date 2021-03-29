@@ -16,4 +16,5 @@ type OrderStatus int8
 const (
 	OrderStatusProgress  OrderStatus = 1
 	OrderStatusCompleted OrderStatus = 2
+	OrderStatusCancel    OrderStatus = 3
 )

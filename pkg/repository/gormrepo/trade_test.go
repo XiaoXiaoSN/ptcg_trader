@@ -208,7 +208,7 @@ func (s *repoTestSuite) Test_repository_GetOrder() {
 			want: model.Order{
 				ID:        1,
 				ItemID:    1,
-				CreatedID: 2,
+				CreatorID: 2,
 				OrderType: model.OrderTypeBuy,
 				Price:     decimal.NewFromFloat(8.10),
 				Status:    model.OrderStatusCompleted,
@@ -217,8 +217,8 @@ func (s *repoTestSuite) Test_repository_GetOrder() {
 
 			prepareFn: func(want model.Order, query model.OrderQuery) {
 				row := sqlmock.
-					NewRows([]string{"id", "item_id", "created_id", "order_type", "price", "status"}).
-					AddRow(want.ID, want.ItemID, want.CreatedID, want.OrderType, want.Price, want.Status)
+					NewRows([]string{"id", "item_id", "creator_id", "order_type", "price", "status"}).
+					AddRow(want.ID, want.ItemID, want.CreatorID, want.OrderType, want.Price, want.Status)
 				sqlStmt := `SELECT * FROM "orders" WHERE "orders"."id" = $1`
 				s.SQLMock.ExpectQuery(regexp.QuoteMeta(sqlStmt)).
 					WithArgs(want.ID).
@@ -334,7 +334,7 @@ func (s *repoTestSuite) Test_repository_ListOrders() {
 				{
 					ID:        1,
 					ItemID:    1,
-					CreatedID: 2,
+					CreatorID: 2,
 					OrderType: model.OrderTypeBuy,
 					Price:     decimal.NewFromFloat(8.10),
 					Status:    model.OrderStatusCompleted,
@@ -342,7 +342,7 @@ func (s *repoTestSuite) Test_repository_ListOrders() {
 				{
 					ID:        2,
 					ItemID:    2,
-					CreatedID: 2,
+					CreatorID: 2,
 					OrderType: model.OrderTypeSell,
 					Price:     decimal.NewFromFloat(7.10),
 					Status:    model.OrderStatusCompleted,
@@ -351,9 +351,9 @@ func (s *repoTestSuite) Test_repository_ListOrders() {
 			wantErr: false,
 
 			prepareFn: func(want []model.Order, query model.OrderQuery) {
-				rows := sqlmock.NewRows([]string{"id", "item_id", "created_id", "order_type", "price", "status"})
+				rows := sqlmock.NewRows([]string{"id", "item_id", "creator_id", "order_type", "price", "status"})
 				for _, r := range want {
-					rows.AddRow(r.ID, r.ItemID, r.CreatedID, r.OrderType, r.Price, r.Status)
+					rows.AddRow(r.ID, r.ItemID, r.CreatorID, r.OrderType, r.Price, r.Status)
 				}
 				sqlStmt := `SELECT * FROM "orders"`
 				s.SQLMock.ExpectQuery(regexp.QuoteMeta(sqlStmt)).
@@ -401,15 +401,15 @@ func (s *repoTestSuite) Test_repository_GetTransaction() {
 				}},
 			want: model.Transaction{
 				ID:          1,
-				BuyOrderID:  1,
-				SellOrderID: 2,
+				MakeOrderID: 1,
+				TakeOrderID: 2,
 				FinalPrice:  decimal.NewFromFloat(9.0),
 			},
 			wantErr: false,
 
 			prepareFn: func(want model.Transaction, query model.TransactionQuery) {
-				row := sqlmock.NewRows([]string{"id", "buy_order_id", "sell_order_id", "final_price"}).
-					AddRow(want.ID, want.BuyOrderID, want.SellOrderID, want.FinalPrice)
+				row := sqlmock.NewRows([]string{"id", "make_order_id", "take_order_id", "final_price"}).
+					AddRow(want.ID, want.MakeOrderID, want.TakeOrderID, want.FinalPrice)
 				sqlStmt := `SELECT * FROM "transactions" WHERE "transactions"."id" = $1`
 				s.SQLMock.ExpectQuery(regexp.QuoteMeta(sqlStmt)).
 					WithArgs(want.ID).
@@ -524,23 +524,23 @@ func (s *repoTestSuite) Test_repository_ListTransactions() {
 			want: []model.Transaction{
 				{
 					ID:          1,
-					BuyOrderID:  1,
-					SellOrderID: 2,
+					MakeOrderID: 1,
+					TakeOrderID: 2,
 					FinalPrice:  decimal.NewFromFloat(9.0),
 				},
 				{
 					ID:          2,
-					BuyOrderID:  3,
-					SellOrderID: 4,
+					MakeOrderID: 3,
+					TakeOrderID: 4,
 					FinalPrice:  decimal.NewFromFloat(8.0),
 				},
 			},
 			wantErr: false,
 
 			prepareFn: func(want []model.Transaction, query model.TransactionQuery) {
-				rows := sqlmock.NewRows([]string{"id", "buy_order_id", "sell_order_id", "final_price"})
+				rows := sqlmock.NewRows([]string{"id", "make_order_id", "take_order_id", "final_price"})
 				for _, r := range want {
-					rows.AddRow(r.ID, r.BuyOrderID, r.SellOrderID, r.FinalPrice)
+					rows.AddRow(r.ID, r.MakeOrderID, r.TakeOrderID, r.FinalPrice)
 				}
 				sqlStmt := `SELECT * FROM "transactions"`
 				s.SQLMock.ExpectQuery(regexp.QuoteMeta(sqlStmt)).

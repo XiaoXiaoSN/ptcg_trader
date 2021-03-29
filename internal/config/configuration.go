@@ -15,6 +15,7 @@ type Configuration struct {
 	Env      string `yaml:"env" env:"ENVIRONMENT" default:"product"`
 	Log      LogConfig
 	Database DatabaseConfig
+	Redis    RedisConfig
 	HTTP     HTTPConfig
 }
 

@@ -2,10 +2,16 @@ package trader
 
 import (
 	"context"
+	"fmt"
+	"time"
+
+	"ptcg_trader/internal/errors"
+	"ptcg_trader/internal/redis"
 	"ptcg_trader/pkg/model"
 	"ptcg_trader/pkg/repository"
 	"ptcg_trader/pkg/service"
 
+	"github.com/shopspring/decimal"
 	"go.uber.org/fx"
 )
 
@@ -13,17 +19,23 @@ import (
 type ServiceParams struct {
 	fx.In
 
-	Repo repository.Repositorier
+	Repo  repository.Repositorier
+	Match service.Matcher
+	Redis redis.Redis
 }
 
 type svc struct {
-	repo repository.Repositorier
+	repo  repository.Repositorier
+	match service.Matcher
+	redis redis.Redis
 }
 
 // NewService support DI tool to create a new service instance
 func NewService(params ServiceParams) service.TraderServicer {
 	return &svc{
-		repo: params.Repo,
+		repo:  params.Repo,
+		match: params.Match,
+		redis: params.Redis,
 	}
 }
 
@@ -77,14 +89,70 @@ func (svc *svc) ListOrders(ctx context.Context, query model.OrderQuery) ([]model
 	return orders, total, nil
 }
 
-// Create order
+// Create a Order and check are there any orders can be matched
 func (svc *svc) CreateOrder(ctx context.Context, order *model.Order) error {
-	err := svc.repo.CreateOrder(ctx, order)
+	// try to get redis lock
+	lockKey := fmt.Sprintf("trader.item.%d.lock", order.ItemID)
+	ok, err := svc.redis.RedisLock(ctx, lockKey, "", time.Second)
 	if err != nil {
 		return err
 	}
+	if !ok {
+		return errors.Wrap(errors.ErrDataConflict, "Order failed, please try again")
+	}
+	defer svc.redis.RedisUnlock(ctx, lockKey, "")
 
-	// TODO: 嘗試搓合
+	// check matched
+	matchedOrder, err := svc.match.MatchOrder(ctx, order)
+	if err != nil && !errors.Is(err, errors.ErrResourceNotFound) {
+		return err
+	}
+	// no any matched, simply create order
+	if errors.Is(err, errors.ErrResourceNotFound) {
+		err := svc.repo.CreateOrder(ctx, order)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	// order matched! change order status and create a transaction record
+	err = svc.repo.Transaction(ctx, func(ctx context.Context, txRepo repository.Repositorier) error {
+		// update status of matched order
+		orderQuery := model.OrderQuery{
+			ID: &matchedOrder.ID,
+		}
+		orderUpdates := model.OrderUpdates{
+			Status: model.OrderStatusCompleted,
+		}
+		err = txRepo.UpdateOrders(ctx, orderQuery, orderUpdates)
+		if err != nil {
+			return err
+		}
+
+		// create the new order with completed status
+		order.Status = model.OrderStatusCompleted
+		err = txRepo.CreateOrder(ctx, order)
+		if err != nil {
+			return err
+		}
+
+		// create transaction
+		tx := model.Transaction{
+			MakeOrderID: matchedOrder.ID,
+			TakeOrderID: order.ID,
+			FinalPrice:  decimal.Min(order.Price, matchedOrder.Price),
+		}
+		err = txRepo.CreateTransaction(ctx, &tx)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

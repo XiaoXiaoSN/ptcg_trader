@@ -137,13 +137,13 @@ func (_m *MockRepository) CreateOrder(ctx context.Context, order *model.Order) e
 	return r0
 }
 
-// CreateTransaction provides a mock function with given fields: ctx, order
-func (_m *MockRepository) CreateTransaction(ctx context.Context, order *model.Transaction) error {
-	ret := _m.Called(ctx, order)
+// CreateTransaction provides a mock function with given fields: ctx, tx
+func (_m *MockRepository) CreateTransaction(ctx context.Context, tx *model.Transaction) error {
+	ret := _m.Called(ctx, tx)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, *model.Transaction) error); ok {
-		r0 = rf(ctx, order)
+		r0 = rf(ctx, tx)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -276,6 +276,27 @@ func (_m *MockRepository) ListTransactions(ctx context.Context, query model.Tran
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, model.TransactionQuery) error); ok {
 		r1 = rf(ctx, query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MatchOrders provides a mock function with given fields: ctx, order
+func (_m *MockRepository) MatchOrders(ctx context.Context, order *model.Order) (model.Order, error) {
+	ret := _m.Called(ctx, order)
+
+	var r0 model.Order
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Order) model.Order); ok {
+		r0 = rf(ctx, order)
+	} else {
+		r0 = ret.Get(0).(model.Order)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *model.Order) error); ok {
+		r1 = rf(ctx, order)
 	} else {
 		r1 = ret.Error(1)
 	}

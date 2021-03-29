@@ -25,7 +25,7 @@ const (
 	Postgres DatabaseType = "postgres"
 )
 
-// DatabaseConfig for db config
+// DatabaseConfig for db connection config
 type DatabaseConfig struct {
 	Debug          bool         `mapstructure:"debug" env:"DB_DEBUG"`
 	Type           DatabaseType `mapstructure:"type" env:"DB_TYPE"`
@@ -65,6 +65,15 @@ func (database *DatabaseConfig) GetConnectionStr() (string, error) {
 		return "", errors.New("Not support driver")
 	}
 	return connectionString, nil
+}
+
+// RedisConfig setting redis connection config
+type RedisConfig struct {
+	Addresses  []string `mapstructure:"addresses" env:"REDIS_ADDRESSES"`
+	Password   string   `mapstructure:"password" env:"REDIS_PASSWORD"`
+	MaxRetries int      `mapstructure:"max_retries" env:"REDIS_MAX_RETRIES"`
+	PoolSize   int      `mapstructure:"pool_size" env:"REDIS_POOL_SIZE"`
+	DB         int      `mapstructure:"db" env:"REDIS_DB"`
 }
 
 // HTTPConfig setting http config

@@ -18,6 +18,13 @@ database:
   search_path: "trader"
   ssl_enable: false
 
+redis:
+  addresses: [ "localhost:6379" ]
+  password: ""
+  max_retries: 5
+  pool_size: 5
+  db: 1
+
 http:
   mode: "debug"
   address: ":17420"

@@ -8,6 +8,7 @@ package restful
 // @Server http://www.fake.com FakeServerHost
 
 import (
+	"ptcg_trader/internal/echo/middleware"
 	"ptcg_trader/pkg/service"
 
 	"github.com/labstack/echo/v4"
@@ -23,7 +24,7 @@ func SetRoutes(e *echo.Echo, h *Handler) {
 
 		gAPIv1.GET("/orders", h.listOrderEndpoint)
 		gAPIv1.GET("/orders/:orderID", h.getOrderEndpoint)
-		gAPIv1.POST("/orders", h.createOrderEndpoint)
+		gAPIv1.POST("/orders", h.createOrderEndpoint, middleware.IdentityMiddleware())
 
 		gAPIv1.GET("/transactions", h.listTransactionEndpoint)
 	}

@@ -6,7 +6,6 @@ import (
 
 	"ptcg_trader/internal/errors"
 	"ptcg_trader/pkg/model"
-	"ptcg_trader/pkg/repository"
 	"ptcg_trader/pkg/service"
 	"ptcg_trader/pkg/service/trader"
 	"ptcg_trader/test/mocks"
@@ -24,9 +23,11 @@ func Test_TraderService(t *testing.T) {
 type svcTestSuite struct {
 	suite.Suite
 
-	ctx      context.Context
-	svc      service.TraderServicer
-	mockRepo *mocks.MockRepository
+	ctx         context.Context
+	svc         service.TraderServicer
+	mockMatcher *mocks.MockMatcher
+	mockRepo    *mocks.MockRepository
+	mockRedis   *mocks.MockRedis
 }
 
 func (s *svcTestSuite) SetupSuite() {
@@ -34,16 +35,14 @@ func (s *svcTestSuite) SetupSuite() {
 
 	_ = fx.New(
 		fx.Provide(
-			func() *mocks.MockRepository {
-				return &mocks.MockRepository{}
-			},
-			func(m *mocks.MockRepository) repository.Repositorier {
-				return m
-			},
+			mocks.ImplMockRepository,
+			mocks.ImplMockRedis,
+			mocks.ImplMockMatcher,
 			trader.NewService,
 		),
 		fx.Populate(
 			&s.mockRepo,
+			&s.mockRedis,
 			&s.svc,
 		),
 	)

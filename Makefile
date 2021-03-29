@@ -16,6 +16,8 @@ server:
 docker.build:
 	docker build . -f deploy/docker/trader.dockerfile
 
+gencode: swagger.gen mock.gen
+
 
 ##############################
 # swagger api document
@@ -32,11 +34,20 @@ swagger.gen:
 	goas --module-path . --main-file-path $(API_HEADER_FILE) --handler-path $(API_PATH) --output $(SWAGGER_FILE)
 
 
-
 ##############################
 # mocking test data
 ##############################
 
+mock.gen: mock.gen.svc.matcher mock.gen.repo mock.gen.redis
+
+mock.gen.svc.matcher:
+	# go get github.com/vektra/mockery/.../
+	mockery -dir pkg/service -name Matcher -filename mock_svc_matcher.go --structname MockMatcher -output test/mocks
+
 mock.gen.repo:
 	# go get github.com/vektra/mockery/.../
 	mockery -dir pkg/repository -name Repositorier -filename mock_repository.go --structname MockRepository -output test/mocks
+
+mock.gen.redis:
+	# go get github.com/vektra/mockery/.../
+	mockery -dir internal/redis -name Redis -filename mock_redis.go --structname MockRedis -output test/mocks
