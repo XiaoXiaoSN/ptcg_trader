@@ -1,10 +1,11 @@
+package restful
+
 // @Version 0.0.1
 // @Title PTCG Trader API v1
 // @Description PTCG Trader API
 // @ContactName Xiao.Xiao
 // @ContactEmail freedom85812@gmail.com
 // @Server http://www.fake.com FakeServerHost
-package restful
 
 import (
 	"ptcg_trader/pkg/service"
@@ -28,8 +29,8 @@ func SetRoutes(e *echo.Echo, h *Handler) {
 	}
 }
 
-// RestfulHandlerParams define params for create handler
-type RestfulHandlerParams struct {
+// HandlerParams define params for create handler
+type HandlerParams struct {
 	fx.In
 
 	Svc service.TraderServicer
@@ -41,7 +42,7 @@ type Handler struct {
 }
 
 // NewHandler http handler injection
-func NewHandler(params RestfulHandlerParams) *Handler {
+func NewHandler(params HandlerParams) *Handler {
 	server := Handler{
 		svc: params.Svc,
 	}

@@ -13,7 +13,7 @@ database:
   port: 5432
   username: local
   password: local
-  dbname: ptcg
+  db_name: ptcg
   type: postgres
   search_path: "trader"
   ssl_enable: false

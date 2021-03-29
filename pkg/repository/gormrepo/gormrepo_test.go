@@ -44,7 +44,7 @@ func (s *repoTestSuite) SetupSuite() {
 
 	s.ctx = context.Background()
 	s.SQLMock = mock
-	s.Repo, err = gormrepo.NewRepository(gormrepo.GORMRepoParams{
+	s.Repo, err = gormrepo.NewRepository(gormrepo.RepoParams{
 		DB: gormDB,
 	})
 	s.Require().NoError(err)

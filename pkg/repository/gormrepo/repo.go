@@ -18,8 +18,8 @@ const (
 	DefaultPerPage int = 50
 )
 
-// GORMRepoParams define params for create repository
-type GORMRepoParams struct {
+// RepoParams define params for create repository
+type RepoParams struct {
 	fx.In
 
 	DB *gorm.DB
@@ -31,7 +31,7 @@ type _repository struct {
 }
 
 // NewRepository support DI tool to create a new gorm repository instance
-func NewRepository(param GORMRepoParams) (repository.Repositorier, error) {
+func NewRepository(param RepoParams) (repository.Repositorier, error) {
 	return &_repository{
 		db: param.DB,
 	}, nil

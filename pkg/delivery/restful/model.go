@@ -17,6 +17,7 @@ type PaginationQuery struct {
 	PerPage int `query:"per_page" json:"per_page" example:"50"`
 }
 
+// ValidateAndSet validate input and set the default page or per_page values
 func (p *PaginationQuery) ValidateAndSet() error {
 	if p.Page < 0 || p.PerPage < 0 {
 		return errors.Wrap(errors.ErrBadRequest, "param Page or PerPage invalid")
@@ -40,6 +41,7 @@ type Pagination struct {
 	TotalPage  int `json:"total_page" example:"2"`
 }
 
+// NewPagination new pagination
 func NewPagination(page, perPage, total int) Pagination {
 	totalPage := total / perPage
 	if total%perPage > 0 {

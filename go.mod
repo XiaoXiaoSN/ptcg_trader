@@ -10,7 +10,7 @@ require (
 	github.com/jackc/pgconn v1.7.0
 	github.com/jackc/pgx/v4 v4.9.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/labstack/echo-contrib v0.9.0
+	github.com/labstack/echo-contrib v0.9.0 // indirect
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/magiconair/properties v1.8.4 // indirect

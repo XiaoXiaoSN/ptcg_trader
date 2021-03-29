@@ -9,10 +9,10 @@ import (
 
 // LogConfig ...
 type LogConfig struct {
-	Level       string `yaml:"level" env:"level"`
-	Environment string `yaml:"environment" env:"environment"`
-	Format      string `yaml:"format" env:"format"`
-	AppID       string `yaml:"app_id" env:"app_id"`
+	Level       string `mapstructure:"level" env:"LOG_LEVEL"`
+	Environment string `mapstructure:"environment" env:"LOG_ENVIRONMENT"`
+	Format      string `mapstructure:"format" env:"LOG_FORMAT"`
+	AppID       string `mapstructure:"app_id" env:"LOG_APP_ID"`
 }
 
 // DatabaseType type define
@@ -27,20 +27,20 @@ const (
 
 // DatabaseConfig for db config
 type DatabaseConfig struct {
-	Debug          bool
-	Type           DatabaseType
-	Host           string
-	Port           int
-	Username       string
-	Password       string
-	DBName         string
-	MaxIdleConns   int
-	MaxOpenConns   int
-	MaxLifetimeSec int
+	Debug          bool         `mapstructure:"debug" env:"DB_DEBUG"`
+	Type           DatabaseType `mapstructure:"type" env:"DB_TYPE"`
+	Host           string       `mapstructure:"host" env:"DB_HOST"`
+	Port           int          `mapstructure:"port" env:"DB_PORT"`
+	Username       string       `mapstructure:"username" env:"DB_USERNAME"`
+	Password       string       `mapstructure:"password" env:"DB_PASSWORD"`
+	DBName         string       `mapstructure:"db_name" env:"DB_NAME"`
+	MaxIdleConns   int          `mapstructure:"max_idle_conns" env:"DB_MAX_IDLE_CONNS"`
+	MaxOpenConns   int          `mapstructure:"max_open_conns" env:"DB_MAX_OPEN_CONNS"`
+	MaxLifetimeSec int          `mapstructure:"max_lifetime_sec" env:"DB_MAX_LIFETIME_SEC"`
 	// pg should setting this value. It will restrict access to db schema.
-	SearchPath string `yaml:"search_path" mapstructure:"search_path"`
+	SearchPath string `mapstructure:"search_path" env:"DB_SEARCH_PATH"`
 	// pg ssl mode
-	SSLEnable bool `yaml:"ssl_enable" mapstructure:"ssl_enable"`
+	SSLEnable bool `mapstructure:"ssl_enable" env:"DB_SSL_ENABLE"`
 }
 
 // GetConnectionStr ...
@@ -69,6 +69,6 @@ func (database *DatabaseConfig) GetConnectionStr() (string, error) {
 
 // HTTPConfig setting http config
 type HTTPConfig struct {
-	Mode    string `json:"mode"` // ex: debug, product
-	Address string `json:"address"`
+	Mode    string `mapstructure:"mode" env:"HTTP_MODE"` // ex: debug, product
+	Address string `mapstructure:"address" env:"HTTP_ADDRESS"`
 }
