@@ -61,7 +61,7 @@ func (repo *_repository) ListItems(ctx context.Context, query model.ItemQuery) (
 }
 
 func buildOrderQuery(db *gorm.DB, query model.OrderQuery) *gorm.DB {
-	db = db.Model(&model.Order{}).Where(query)
+	db = db.Where(query)
 
 	return db
 }
@@ -71,6 +71,7 @@ func (repo *_repository) GetOrder(ctx context.Context, query model.OrderQuery) (
 	var order model.Order
 
 	err := buildOrderQuery(repo.DB(ctx), query).
+		Model(&model.Order{}).
 		First(&order).Error
 	if err != nil {
 		return order, notFoundOrInternalError(err)
@@ -83,6 +84,7 @@ func (repo *_repository) CountOrders(ctx context.Context, query model.OrderQuery
 	var total int64
 
 	err := buildOrderQuery(repo.DB(ctx), query).
+		Model(&model.Order{}).
 		Count(&total).Error
 	if err != nil {
 		return total, err
@@ -101,7 +103,8 @@ func (repo *_repository) ListOrders(ctx context.Context, query model.OrderQuery)
 	if query.Page <= 0 {
 		query.Page = 1
 	}
-	db = db.Limit(query.PerPage).
+	db = db.Model(&model.Order{}).
+		Limit(query.PerPage).
 		Offset((query.Page - 1) * query.PerPage)
 
 	err := db.Find(&orderList).Error
@@ -128,7 +131,8 @@ func (repo *_repository) UpdateOrders(ctx context.Context, query model.OrderQuer
 
 	db := buildOrderQuery(repo.DB(ctx), query)
 
-	err := db.Updates(&updates).Error
+	err := db.Model(&model.OrderUpdates{}).
+		Updates(&updates).Error
 	if err != nil {
 		return err
 	}

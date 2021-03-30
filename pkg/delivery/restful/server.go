@@ -186,6 +186,9 @@ func (h Handler) createOrderEndpoint(c echo.Context) (err error) {
 	if err != nil {
 		return errors.Wrap(errors.ErrBadRequest, err.Error())
 	}
+	if req.OrderType == 0 {
+		return errors.Wrap(errors.ErrBadRequest, "order type cannot be empty")
+	}
 
 	var orderPrice decimal.Decimal
 	orderPrice, err = decimal.NewFromString(req.Price)

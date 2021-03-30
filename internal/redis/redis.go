@@ -27,14 +27,25 @@ type _redis struct {
 
 // RedisLock ...
 func (r *_redis) RedisLock(ctx context.Context, key, lockerID string, expireTime time.Duration) (bool, error) {
-	ok, err := r.SetNX(ctx, key, lockerID, expireTime).Result()
-	if err != nil {
-		return false, errors.Wrapf(errors.ErrInternalError, "RedisLock SetNX Error: %v", err.Error())
+	timeout := time.NewTicker(3 * time.Second)
+
+	for {
+		select {
+		default:
+			ok, err := r.SetNX(ctx, key, lockerID, expireTime).Result()
+			if err != nil {
+				return false, errors.Wrapf(errors.ErrInternalError, "RedisLock SetNX Error: %v", err.Error())
+			}
+			if !ok {
+				time.Sleep(1 * time.Microsecond)
+				continue
+			}
+			return true, nil
+
+		case <-timeout.C:
+			return false, errors.Wrapf(errors.ErrDataConflict, "RedisLock SetNX with key %v timeout", key)
+		}
 	}
-	if !ok {
-		return false, errors.Wrapf(errors.ErrResourceNotFound, "RedisLock SetNX with key %v already exists", key)
-	}
-	return true, nil
 }
 
 // RedisUnlock ...

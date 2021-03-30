@@ -16,6 +16,9 @@ server:
 docker.build:
 	docker build . -f deploy/docker/trader.dockerfile
 
+docker.server:
+	docker-compose up -d --scale trader=3
+
 gencode: swagger.gen mock.gen
 
 

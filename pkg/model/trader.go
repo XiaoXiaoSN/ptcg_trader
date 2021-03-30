@@ -49,6 +49,11 @@ type OrderUpdates struct {
 	Status OrderStatus `json:"status"  gorm:"column:status"`
 }
 
+// TableName impl gorm Tabler
+func (*OrderUpdates) TableName() string {
+	return "orders"
+}
+
 // Transaction is the result of orders matching
 type Transaction struct {
 	ID          int64           `json:"id"  gorm:"column:id"`

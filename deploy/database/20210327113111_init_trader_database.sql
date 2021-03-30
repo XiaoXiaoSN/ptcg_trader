@@ -11,11 +11,11 @@ CREATE TABLE items
 
 CREATE TABLE orders
 (
-    id         bigint                  NOT NULL CONSTRAINT orders_pk PRIMARY KEY,
+    id         bigserial               NOT NULL CONSTRAINT orders_pk PRIMARY KEY,
     item_id    bigint    DEFAULT 0     NOT NULL,
     creator_id bigint    DEFAULT 0     NOT NULL,
     order_type smallint  DEFAULT 0     NOT NULL,
-    price      bigint    DEFAULT 0     NOT NULL,
+    price      decimal   DEFAULT 0     NOT NULL,
     status     smallint  DEFAULT 0     NOT NULL,
     updated_at timestamp DEFAULT now() NOT NULL,
     created_at timestamp DEFAULT now() NOT NULL
@@ -23,7 +23,7 @@ CREATE TABLE orders
 
 CREATE TABLE users
 (
-    id            bigint                                     NOT NULL CONSTRAINT users_pk PRIMARY KEY,
+    id            bigserial                                  NOT NULL CONSTRAINT users_pk PRIMARY KEY,
     display_name  varchar(200) DEFAULT ''::character varying NOT NULL,
     email         varchar(400) DEFAULT ''::character varying NOT NULL,
     password_hash varchar(200) DEFAULT ''::character varying NOT NULL,
@@ -34,10 +34,10 @@ CREATE TABLE users
 
 CREATE TABLE transactions
 (
-    id            bigint                  NOT NULL CONSTRAINT transactions_p PRIMARY KEY,
+    id            bigserial               NOT NULL CONSTRAINT transactions_p PRIMARY KEY,
     make_order_id bigint    DEFAULT 0     NOT NULL,
     take_order_id bigint    DEFAULT 0     NOT NULL,
-    final_price   bigint    DEFAULT 0     NOT NULL,
+    final_price   decimal   DEFAULT 0     NOT NULL,
     updated_at    timestamp DEFAULT now() NOT NULL,
     created_at    timestamp DEFAULT now() NOT NULL
 );
