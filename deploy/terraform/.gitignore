@@ -1,0 +1,11 @@
+*.tfstate
+*.swp
+*.swo
+*.tfstate.backup
+.terraform
+.DS_Store
+*.backup
+.terraform*
+.deprecated
+*outputs
+.vscode

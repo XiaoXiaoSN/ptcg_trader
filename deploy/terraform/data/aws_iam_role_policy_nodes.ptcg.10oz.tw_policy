@@ -1,0 +1,57 @@
+{
+  "Statement": [
+    {
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeRegions"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Action": [
+        "s3:Get*"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::ptcg-bucket-tf/ptcg.10oz.tw/addons/*",
+        "arn:aws:s3:::ptcg-bucket-tf/ptcg.10oz.tw/cluster.spec",
+        "arn:aws:s3:::ptcg-bucket-tf/ptcg.10oz.tw/config",
+        "arn:aws:s3:::ptcg-bucket-tf/ptcg.10oz.tw/instancegroup/*",
+        "arn:aws:s3:::ptcg-bucket-tf/ptcg.10oz.tw/pki/issued/*",
+        "arn:aws:s3:::ptcg-bucket-tf/ptcg.10oz.tw/pki/ssh/*",
+        "arn:aws:s3:::ptcg-bucket-tf/ptcg.10oz.tw/secrets/dockerconfig"
+      ]
+    },
+    {
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:GetEncryptionConfiguration",
+        "s3:ListBucket",
+        "s3:ListBucketVersions"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::ptcg-bucket-tf"
+      ]
+    },
+    {
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetRepositoryPolicy",
+        "ecr:DescribeRepositories",
+        "ecr:ListImages",
+        "ecr:BatchGetImage"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "*"
+      ]
+    }
+  ],
+  "Version": "2012-10-17"
+}

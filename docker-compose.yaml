@@ -4,7 +4,7 @@ services:
   nginx:
     image: nginx:latest
     volumes:
-      - ./deploy/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/docker/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - trader
     ports:

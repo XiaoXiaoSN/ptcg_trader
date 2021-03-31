@@ -14,7 +14,7 @@ server:
 	PROJ_HOME=$(CURDIR) CONFIG_NAME=app go run main.go $@
 
 docker.build:
-	docker build . -f deploy/docker/trader.dockerfile
+	docker build . -f deploy/docker/trader.dockerfile -t ptcg_trader
 
 docker.server:
 	docker-compose up -d --scale trader=3
