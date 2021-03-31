@@ -2,13 +2,13 @@
 env: dev
 
 log:
-  level: "debug"
+  level: "warn"
   environment: dev
   format: "console"
   app_id: ptcg_trader
 
 database:
-  debug: true
+  debug: false
   host: postgres
   port: 5432
   username: local
@@ -26,5 +26,5 @@ redis:
   db: 1
 
 http:
-  mode: "debug"
+  debug: false
   address: ":17420"

@@ -27,7 +27,7 @@ type _redis struct {
 
 // RedisLock ...
 func (r *_redis) RedisLock(ctx context.Context, key, lockerID string, expireTime time.Duration) (bool, error) {
-	timeout := time.NewTicker(3 * time.Second)
+	timeout := time.NewTicker(5 * time.Second)
 
 	for {
 		select {

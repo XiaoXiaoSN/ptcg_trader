@@ -21,6 +21,7 @@ func InitLog(logConfig config.LogConfig) (err error) {
 	}
 
 	// set the log level
+	// levels: trace debug info warn error fatal panic
 	logLevel, err := zerolog.ParseLevel(logConfig.Level)
 	if err != nil {
 		log.Warn().Msgf("%+v", errors.WithStack(err))

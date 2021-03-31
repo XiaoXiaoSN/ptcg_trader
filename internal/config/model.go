@@ -78,6 +78,6 @@ type RedisConfig struct {
 
 // HTTPConfig setting http config
 type HTTPConfig struct {
-	Mode    string `mapstructure:"mode" env:"HTTP_MODE"` // ex: debug, product
+	Debug   bool   `mapstructure:"debug" env:"HTTP_DEBUG"`
 	Address string `mapstructure:"address" env:"HTTP_ADDRESS"`
 }

@@ -19,7 +19,7 @@ func NewEchoEngine(cfg config.HTTPConfig) *echo.Echo {
 
 	e := echo.New()
 
-	if cfg.Mode == "debug" {
+	if cfg.Debug {
 		e.Debug = true
 		e.HideBanner = false
 		e.HidePort = false

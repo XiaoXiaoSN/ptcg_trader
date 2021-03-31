@@ -42,5 +42,6 @@ export default function() {
     // Verify response
     check(res, {
         "status is 200": (r) => r.status === 200,
+        "status is 409": (r) => r.status === 409,
     });
 }
