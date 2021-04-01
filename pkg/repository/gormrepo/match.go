@@ -15,6 +15,7 @@ type _matchOrder struct {
 
 	Price     clause.Expression `gorm:"-"`
 	ForUpdate bool              `gorm:"-"`
+	ForShare  bool              `gorm:"-"`
 }
 
 func (w *_matchOrder) Where(db *gorm.DB) *gorm.DB {
@@ -25,6 +26,8 @@ func (w *_matchOrder) Where(db *gorm.DB) *gorm.DB {
 	}
 	if w.ForUpdate {
 		clauses = append(clauses, selectForUpdate)
+	} else if w.ForShare {
+		clauses = append(clauses, selectForShare)
 	}
 
 	db = db.Clauses(clauses...).Where(w)

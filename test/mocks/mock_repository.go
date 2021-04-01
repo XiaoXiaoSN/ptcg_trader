@@ -4,9 +4,12 @@ package mocks
 
 import (
 	context "context"
-	model "ptcg_trader/pkg/model"
+
+	gorm "gorm.io/gorm"
 
 	mock "github.com/stretchr/testify/mock"
+
+	model "ptcg_trader/pkg/model"
 
 	repository "ptcg_trader/pkg/repository"
 )
@@ -146,6 +149,22 @@ func (_m *MockRepository) CreateTransaction(ctx context.Context, tx *model.Trans
 		r0 = rf(ctx, tx)
 	} else {
 		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DB provides a mock function with given fields: ctx
+func (_m *MockRepository) DB(ctx context.Context) *gorm.DB {
+	ret := _m.Called(ctx)
+
+	var r0 *gorm.DB
+	if rf, ok := ret.Get(0).(func(context.Context) *gorm.DB); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*gorm.DB)
+		}
 	}
 
 	return r0

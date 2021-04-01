@@ -22,6 +22,8 @@ type ItemQuery struct {
 
 	PerPage int `json:"per_page" gorm:"-"`
 	Page    int `json:"page" gorm:"-"`
+
+	ForUpdate bool `gorm:"-"`
 }
 
 // Order is the model of user order

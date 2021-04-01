@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"ptcg_trader/pkg/model"
+
+	"gorm.io/gorm"
 )
 
 // Repositorier ...
@@ -10,6 +12,8 @@ type Repositorier interface {
 	TraderRepositorier
 	MatcherRepositorier
 
+	// DB get gorm.DB instance
+	DB(ctx context.Context) *gorm.DB
 	// Begin begins a transaction
 	Begin(ctx context.Context) Repositorier
 	// Commit commit a transaction

@@ -17,7 +17,7 @@ docker.build:
 	docker build . -f deploy/docker/trader.dockerfile -t ptcg_trader
 
 docker.server:
-	docker-compose up -d --scale trader=3
+	docker-compose up -d --build --force-recreate --scale trader=3
 
 gencode: swagger.gen mock.gen
 

@@ -22,6 +22,7 @@ const (
 // define some useful gorm clauses
 var (
 	selectForUpdate clause.Expression = clause.Locking{Strength: "UPDATE"}
+	selectForShare  clause.Expression = clause.Locking{Strength: "SHARE", Table: clause.Table{Name: clause.CurrentTable}}
 )
 
 // RepoParams define params for create repository

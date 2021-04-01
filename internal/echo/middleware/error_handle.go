@@ -32,11 +32,11 @@ func ErrMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 			// use response status code to set log level
 			if resp.Status >= http.StatusInternalServerError {
-				logger.Error().Msgf("%+v", err)
+				logger.Error().Msgf("error dump: %+v", err)
 			} else if resp.Status >= http.StatusBadRequest {
-				logger.Warn().Msgf("%+v", err)
+				logger.Warn().Msgf("error dump: %+v", err)
 			} else {
-				logger.Debug().Msgf("%+v", err)
+				logger.Debug().Msgf("error dump: %+v", err)
 			}
 		})
 

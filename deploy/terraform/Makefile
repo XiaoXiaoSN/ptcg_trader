@@ -1,7 +1,10 @@
 Terraform := terraform
-KOPS_STATE_STORE := s3://ptcg-bucket-tf
 
-.PHONY init
+.PHONY: init kube.export
 
 init:
 	$(Terraform) init
+
+kube.export:
+	# brew install kops
+	kops export kubecfg --admin

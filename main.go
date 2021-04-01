@@ -3,11 +3,14 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"time"
 
 	cmd "ptcg_trader/cmd"
 
+	log "github.com/rs/zerolog/log"
 	cobra "github.com/spf13/cobra"
 )
 
@@ -18,6 +21,10 @@ func init() {
 }
 
 func main() {
+	go func() {
+		log.Info().Msgf("listen http port 6060: %+v", http.ListenAndServe("localhost:6060", nil))
+	}()
+
 	rootCmd.AddCommand(cmd.ServerCmd)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

@@ -2,7 +2,7 @@
 env: dev
 
 log:
-  level: "warn"
+  level: "error"
   environment: dev
   format: "console"
   app_id: ptcg_trader
@@ -14,6 +14,8 @@ database:
   username: local
   password: local
   db_name: ptcg
+  max_idle_conns: 2
+  max_open_conns: 5
   type: postgres
   search_path: "trader"
   ssl_enable: false

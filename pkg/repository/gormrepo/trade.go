@@ -7,11 +7,18 @@ import (
 	"reflect"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func buildItemQuery(db *gorm.DB, query model.ItemQuery) *gorm.DB {
-	db = db.Model(&model.Item{}).Where(query)
+	var clauses []clause.Expression
 
+	if query.ForUpdate {
+		clauses = append(clauses, selectForUpdate)
+	}
+
+	db = db.Model(&model.Item{}).
+		Clauses(clauses...).Where(query)
 	return db
 }
 

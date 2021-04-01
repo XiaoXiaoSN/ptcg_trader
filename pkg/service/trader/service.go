@@ -2,8 +2,6 @@ package trader
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"ptcg_trader/internal/errors"
 	"ptcg_trader/internal/redis"
@@ -91,33 +89,43 @@ func (svc *svc) ListOrders(ctx context.Context, query model.OrderQuery) ([]model
 
 // Create a Order and check are there any orders can be matched
 func (svc *svc) CreateOrder(ctx context.Context, order *model.Order) error {
-	// try to get redis lock
-	lockKey := fmt.Sprintf("trader.item.%d.lock", order.ItemID)
-	ok, err := svc.redis.RedisLock(ctx, lockKey, "", time.Second)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return errors.Wrap(errors.ErrDataConflict, "Order failed, please try again")
-	}
-	defer svc.redis.RedisUnlock(ctx, lockKey, "")
+	// // try to get redis lock
+	// lockKey := fmt.Sprintf("trader.item.%d.lock", order.ItemID)
+	// ok, err := svc.redis.RedisLock(ctx, lockKey, "", time.Second)
+	// if err != nil {
+	// 	return err
+	// }
+	// if !ok {
+	// 	return errors.Wrap(errors.ErrDataConflict, "Order failed, please try again")
+	// }
+	// defer svc.redis.RedisUnlock(ctx, lockKey, "")
 
-	// check matched
-	matchedOrder, err := svc.match.MatchOrder(ctx, order)
-	if err != nil && !errors.Is(err, errors.ErrResourceNotFound) {
-		return err
-	}
-	// no any matched, simply create order
-	if errors.Is(err, errors.ErrResourceNotFound) {
-		err := svc.repo.CreateOrder(ctx, order)
+	// order matched! change order status and create a transaction record
+	err := svc.repo.Transaction(ctx, func(ctx context.Context, txRepo repository.Repositorier) error {
+		// get database row lock
+		itemQuery := model.ItemQuery{
+			ID:        &order.ItemID,
+			ForUpdate: true,
+		}
+		_, err := txRepo.GetItem(ctx, itemQuery)
 		if err != nil {
 			return err
 		}
-		return nil
-	}
 
-	// order matched! change order status and create a transaction record
-	err = svc.repo.Transaction(ctx, func(ctx context.Context, txRepo repository.Repositorier) error {
+		// check matched
+		matchedOrder, err := svc.match.WithRepo(txRepo).MatchOrders(ctx, order)
+		if err != nil && !errors.Is(err, errors.ErrResourceNotFound) {
+			return err
+		}
+		// no any matched, simply create order
+		if errors.Is(err, errors.ErrResourceNotFound) {
+			err := txRepo.CreateOrder(ctx, order)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
 		// update status of matched order
 		orderQuery := model.OrderQuery{
 			ID: &matchedOrder.ID,

@@ -27,7 +27,17 @@ func NewMatch(params MatchParams) service.Matcher {
 	}
 }
 
-func (svc *svc) MatchOrder(ctx context.Context, order *model.Order) (*model.Order, error) {
+func (svc *svc) WithRepo(repo repository.Repositorier) service.Matcher {
+	if repo == nil {
+		repo = svc.repo
+	}
+
+	return NewMatch(MatchParams{
+		Repo: repo,
+	})
+}
+
+func (svc *svc) MatchOrders(ctx context.Context, order *model.Order) (*model.Order, error) {
 	matchedOrder, err := svc.repo.MatchOrders(ctx, order)
 	if err != nil {
 		return nil, err

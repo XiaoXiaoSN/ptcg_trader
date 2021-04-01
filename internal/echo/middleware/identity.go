@@ -29,7 +29,7 @@ func IdentityMiddleware() echo.MiddlewareFunc {
 			ctx := context.WithValue(c.Request().Context(), ctxutil.CtxKeyIdentityID, identityID)
 
 			// set the identity ctx into log system
-			logger := log.With().Int64("identity_id", identityID).Logger()
+			logger := log.Ctx(ctx).With().Int64("identity_id", identityID).Logger()
 			ctx = logger.WithContext(ctx)
 
 			// write back to echo request object (with identity ctx and logger)
