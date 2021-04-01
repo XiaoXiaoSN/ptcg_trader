@@ -1,0 +1,80 @@
+affinity: {}
+autoscaling:
+  enabled: false
+  maxReplicas: 100
+  minReplicas: 1
+  targetCPUUtilizationPercentage: 80
+env:
+- name: ENV
+  value: development
+- name: GRAYLOG_ADDR
+  value: 10.1.1.181
+fullnameOverride: ""
+image:
+  pullPolicy: IfNotPresent
+  repository: fluent/fluent-bit
+  tag: 1.4.4
+ingress:
+  annotations: {}
+  enabled: false
+  hosts:
+  - host: chart-example.local
+    paths: []
+  tls: []
+nameOverride: ""
+nodeSelector: {}
+podAnnotations: {}
+podSecurityContext: {}
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+securityContext: {}
+service:
+  port: 80
+  type: ClusterIP
+tolerations: []
+
+fluent-bit.conf: |-
+  [SERVICE]
+    Flush                   1
+    Daemon                  Off
+    Log_Level               info
+    HTTP_Server             On
+    HTTP_Listen             0.0.0.0
+    HTTP_Port               80
+    Parsers_File            parsers.conf
+  [INPUT]
+    Name                    tail
+    Tag                     fluent-bit-logger
+    Path                    /var/log/containers/fluent-bit-logger-*.log
+    Parser                  docker
+    DB                      /var/log/flb_kube.db
+    Mem_Buf_Limit           5MB
+  [FILTER]
+    Name                    record_modifier
+    Match                   fluent-bit-logger
+    Record                  app_id fluent-bit-logger
+    Record                  environment ${ENV}
+    Record                  host ${HOSTNAME}
+  [OUTPUT]
+    Name                    stdout
+    Match                   fluent-bit-logger*
+    Format                  json_lines
+  [OUTPUT]
+    Name                    gelf
+    Match                   fluent-bit-logger*
+    Host                    ${GRAYLOG_ADDR}
+    Port                    12201
+    Mode                    tcp
+parsers.conf: |-
+  [PARSER]
+    Name                    docker
+    Format                  json
+    Time_Key                time
+    Time_Format             %Y-%m-%dT%H:%M:%S.%L
+    Time_Keep               On
+    Decode_Field_As         json log

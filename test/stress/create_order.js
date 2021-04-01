@@ -19,7 +19,13 @@ let randPrice = () => {
 export let options = {
     vus: 25,
     stages: [
-        { duration: "10s", target: 25 },
+        { duration: "40s", target: 1000 },
+        // { duration: "60s", target: 2500 },
+        // { duration: "120s", target: 8000 },
+        // { duration: "120s", target: 2000 },
+        // { duration: "60s", target: 2500 },
+        // { duration: "40s", target: 1000 },
+        // { duration: "40s", target: 200 },
     ]
 };
 
@@ -43,5 +49,6 @@ export default function() {
     check(res, {
         "status is 200": (r) => r.status === 200,
         "status is 409": (r) => r.status === 409,
+        "status is 500": (r) => r.status === 500,
     });
 }
