@@ -18,7 +18,7 @@ func IdentityMiddleware() echo.MiddlewareFunc {
 			// try to get identity from http header.
 			identity := c.Request().Header.Get(ctxutil.CtxKeyIdentityID.String())
 			if identity == "" {
-				return errors.ErrUnauthorized
+				return errors.Wrap(errors.ErrUnauthorized, "CtxKeyIdentityID not exist in http request header")
 			}
 			identityID, err := strconv.ParseInt(identity, 10, 64)
 			if err != nil {

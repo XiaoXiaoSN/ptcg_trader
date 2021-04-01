@@ -9,10 +9,10 @@ import (
 
 // LogConfig ...
 type LogConfig struct {
-	Level       string `mapstructure:"level" env:"LOG_LEVEL"`
-	Environment string `mapstructure:"environment" env:"LOG_ENVIRONMENT"`
-	Format      string `mapstructure:"format" env:"LOG_FORMAT"`
-	AppID       string `mapstructure:"app_id" env:"LOG_APP_ID"`
+	Level       string `yaml:"level" env:"LOG_LEVEL"`
+	Environment string `yaml:"environment" env:"LOG_ENVIRONMENT"`
+	Format      string `yaml:"format" env:"LOG_FORMAT"`
+	AppID       string `yaml:"app_id" env:"LOG_APP_ID"`
 }
 
 // DatabaseType type define
@@ -27,20 +27,20 @@ const (
 
 // DatabaseConfig for db connection config
 type DatabaseConfig struct {
-	Debug          bool         `mapstructure:"debug" env:"DB_DEBUG"`
-	Type           DatabaseType `mapstructure:"type" env:"DB_TYPE"`
-	Host           string       `mapstructure:"host" env:"DB_HOST"`
-	Port           int          `mapstructure:"port" env:"DB_PORT"`
-	Username       string       `mapstructure:"username" env:"DB_USERNAME"`
-	Password       string       `mapstructure:"password" env:"DB_PASSWORD"`
-	DBName         string       `mapstructure:"db_name" env:"DB_NAME"`
-	MaxIdleConns   int          `mapstructure:"max_idle_conns" env:"DB_MAX_IDLE_CONNS"`
-	MaxOpenConns   int          `mapstructure:"max_open_conns" env:"DB_MAX_OPEN_CONNS"`
-	MaxLifetimeSec int          `mapstructure:"max_lifetime_sec" env:"DB_MAX_LIFETIME_SEC"`
+	Debug          bool         `yaml:"debug" env:"DB_DEBUG"`
+	Type           DatabaseType `yaml:"type" env:"DB_TYPE"`
+	Host           string       `yaml:"host" env:"DB_HOST"`
+	Port           int          `yaml:"port" env:"DB_PORT"`
+	Username       string       `yaml:"username" env:"DB_USERNAME"`
+	Password       string       `yaml:"password" env:"DB_PASSWORD"`
+	DBName         string       `yaml:"db_name" env:"DB_NAME"`
+	MaxIdleConns   int          `yaml:"max_idle_conns" env:"DB_MAX_IDLE_CONNS"`
+	MaxOpenConns   int          `yaml:"max_open_conns" env:"DB_MAX_OPEN_CONNS"`
+	MaxLifetimeSec int          `yaml:"max_lifetime_sec" env:"DB_MAX_LIFETIME_SEC"`
 	// pg should setting this value. It will restrict access to db schema.
-	SearchPath string `mapstructure:"search_path" env:"DB_SEARCH_PATH"`
+	SearchPath string `yaml:"search_path" env:"DB_SEARCH_PATH"`
 	// pg ssl mode
-	SSLEnable bool `mapstructure:"ssl_enable" env:"DB_SSL_ENABLE"`
+	SSLEnable bool `yaml:"ssl_enable" env:"DB_SSL_ENABLE"`
 }
 
 // GetConnectionStr ...
@@ -69,15 +69,15 @@ func (database *DatabaseConfig) GetConnectionStr() (string, error) {
 
 // RedisConfig setting redis connection config
 type RedisConfig struct {
-	Addresses  []string `mapstructure:"addresses" env:"REDIS_ADDRESSES"`
-	Password   string   `mapstructure:"password" env:"REDIS_PASSWORD"`
-	MaxRetries int      `mapstructure:"max_retries" env:"REDIS_MAX_RETRIES"`
-	PoolSize   int      `mapstructure:"pool_size" env:"REDIS_POOL_SIZE"`
-	DB         int      `mapstructure:"db" env:"REDIS_DB"`
+	Addresses  []string `yaml:"addresses" env:"REDIS_ADDRESSES"`
+	Password   string   `yaml:"password" env:"REDIS_PASSWORD"`
+	MaxRetries int      `yaml:"max_retries" env:"REDIS_MAX_RETRIES"`
+	PoolSize   int      `yaml:"pool_size" env:"REDIS_POOL_SIZE"`
+	DB         int      `yaml:"db" env:"REDIS_DB"`
 }
 
 // HTTPConfig setting http config
 type HTTPConfig struct {
-	Debug   bool   `mapstructure:"debug" env:"HTTP_DEBUG"`
-	Address string `mapstructure:"address" env:"HTTP_ADDRESS"`
+	Debug   bool   `yaml:"debug" env:"HTTP_DEBUG"`
+	Address string `yaml:"address" env:"HTTP_ADDRESS"`
 }

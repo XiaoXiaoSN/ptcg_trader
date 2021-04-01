@@ -139,7 +139,7 @@ func notFoundOrInternalError(err error) error {
 	if err == gorm.ErrRecordNotFound {
 		return errors.ErrResourceNotFound
 	}
-	return errors.ErrInternalError
+	return errors.Wrap(errors.ErrInternalError, err.Error())
 }
 
 func duplicateOrInternalError(err error) error {
@@ -156,5 +156,5 @@ func duplicateOrInternalError(err error) error {
 			return errors.ErrResourceAlreadyExists
 		}
 	}
-	return errors.ErrInternalError
+	return errors.Wrap(errors.ErrInternalError, err.Error())
 }

@@ -1,8 +1,12 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
+	"ptcg_trader/internal/errors"
+
+	"github.com/jinzhu/configor"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
@@ -21,30 +25,25 @@ type Configuration struct {
 
 // New load App configuration
 func New() (Configuration, error) {
-	viper.AutomaticEnv()
-
-	configPath := viper.GetString("CONFIG_PATH")
-	if configPath == "" {
-		configPath = "./deploy/config"
+	var fileName, rootDirPath string
+	if fileName = os.Getenv("CONFIG_NAME"); fileName == "" {
+		fileName = "app.yaml"
 	}
-	configName := viper.GetString("CONFIG_NAME")
-	if configName == "" {
-		configName = "app"
+	if rootDirPath = os.Getenv("CONFIG_PATH"); rootDirPath == "" {
+		rootDirPath = "./deploy/config"
 	}
 
-	viper.SetConfigName(configName)
-	viper.AddConfigPath(configPath)
-	viper.SetConfigType("yaml")
-
-	if err := viper.ReadInConfig(); err != nil {
+	configPath := filepath.Join(rootDirPath, fileName)
+	if _, err := os.Stat(configPath); err != nil {
 		log.Error().Msgf("Error reading config file, err: %+v", err)
-		return config, err
+		return config, errors.Wrap(errors.ErrInternalError, err.Error())
 	}
 
-	err := viper.Unmarshal(&config)
+	// Enable debug mode or set env `CONFIGOR_DEBUG_MODE` to true when running your application
+	err := configor.New(&configor.Config{Debug: false}).Load(&config, configPath)
 	if err != nil {
-		log.Error().Msgf("unable to decode into struct, err: %+v", err)
-		return config, err
+		log.Error().Msgf("Error set config file, err: %+v", err)
+		return config, errors.Wrap(errors.ErrInternalError, err.Error())
 	}
 
 	return config, nil
