@@ -81,3 +81,18 @@ type HTTPConfig struct {
 	Debug   bool   `yaml:"debug" env:"HTTP_DEBUG"`
 	Address string `yaml:"address" env:"HTTP_ADDRESS"`
 }
+
+// TraderStrategy ...
+type TraderStrategy string
+
+// TraderStrategy enum
+var (
+	TraderStrategy_Unknown         TraderStrategy = ""
+	TraderStrategy_DatabaseRowLock TraderStrategy = "database_row_lock"
+	TraderStrategy_RedisLock       TraderStrategy = "redis_lock"
+)
+
+// TraderConfig ...
+type TraderConfig struct {
+	Strategy TraderStrategy `yaml:"strategy" env:"TRADER_STRATEGY"`
+}

@@ -2,13 +2,13 @@
 env: dev
 
 log:
-  level: "debug" # trace debug info warn error fatal panic
+  level: "debug" # trace, debug, info, warn, error, fatal, panic
   environment: dev
   format: "console"
   app_id: ptcg_trader
 
 database:
-  debug: false
+  debug: true
   host: localhost
   port: 5432
   username: local
@@ -28,3 +28,7 @@ redis:
 http:
   debug: true
   address: ":17420"
+
+trader:
+  # strategy: "redis_lock"
+  strategy: "database_row_lock"

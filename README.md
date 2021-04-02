@@ -1,4 +1,6 @@
 # PTCG Trader
+[![Build Status](https://travis-ci.com/XiaoXiaoSN/ptcg_trader.svg?branch=master)](https://travis-ci.com/XiaoXiaoSN/ptcg_trader)
+
 Please design and implement a backend system for an online trading platform of Pokémon Trading Card Game.
 - This online trading platform trades 4 kinds of cards only: Pikachu, Bulbasaur, Charmander, and Squirtle.
 - The price of cards is between 1.00 USD and 10.00 USD.

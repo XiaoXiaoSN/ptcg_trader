@@ -21,6 +21,7 @@ type Configuration struct {
 	Database DatabaseConfig `yaml:"database"`
 	Redis    RedisConfig    `yaml:"redis"`
 	HTTP     HTTPConfig     `yaml:"http"`
+	Trader   TraderConfig   `yaml:"trader"`
 }
 
 // New load App configuration
@@ -47,4 +48,9 @@ func New() (Configuration, error) {
 	}
 
 	return config, nil
+}
+
+// Config return a copy of global config
+func Config() Configuration {
+	return config
 }

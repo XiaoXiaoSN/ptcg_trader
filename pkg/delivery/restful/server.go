@@ -22,7 +22,7 @@ type getItemResp struct {
 // @Title getItemEndpoint
 // @Description 取得指定 商品ID 的商品
 // @
-// @Param  itemID    path    uint32  true    "商品ID"
+// @Param  item_id   path    uint32  true    "商品ID"
 // @
 // @Success  200  object  getItemResp           "商品資訊"
 // @Failure  400  object  StautsBadRequestResp  "不正確的查詢參數"
@@ -73,7 +73,7 @@ type listItemRespMeta struct {
 // @Description 列表可以買賣的商品清單
 // @
 // @Param  page      query   uint32  false   "頁數 (default: 1)"
-// @Param  perPage   query   uint32  false   "一頁顯示幾筆 (default: 50)"
+// @Param  per_page  query   uint32  false   "一頁顯示幾筆 (default: 50)"
 // @
 // @Success  200  object  listItemResp  "商品列表"
 // @Failure  400  object  StautsBadRequestResp  "不正確的查詢參數"
@@ -122,7 +122,7 @@ type getOrderResp struct {
 // @Title getOrderEndpoint
 // @Description 取得指定 訂單ID 的訂單
 // @
-// @Param  orderID    path    uint32  true    "訂單ID"
+// @Param  order_id   path    uint32  true    "訂單ID"
 // @
 // @Success  200  object  getOrderResp           "訂單資訊"
 // @Failure  400  object  StautsBadRequestResp  "不正確的查詢參數"
@@ -242,7 +242,7 @@ type listOrderRespMeta struct {
 // @Description 列表下定買單、賣單的訂單們
 // @
 // @Param  page      query   uint32  false   "頁數 (default: 1)"
-// @Param  perPage   query   uint32  false   "一頁顯示幾筆 (default: 50)"
+// @Param  per_page  query   uint32  false   "一頁顯示幾筆 (default: 50)"
 // @
 // @Success  200  object  listOrderResp  "訂單列表"
 // @Failure  400  object  StautsBadRequestResp  "不正確的查詢參數"
@@ -281,6 +281,8 @@ func (h Handler) listOrderEndpoint(c echo.Context) (err error) {
 }
 
 type listTransactionReq struct {
+	ItemID int64 `query:"item_id"`
+
 	PaginationQuery
 }
 
@@ -297,7 +299,8 @@ type listTransactionRespMeta struct {
 // @Description 列表交易紀錄們
 // @
 // @Param  page      query   uint32  false   "頁數 (default: 1)"
-// @Param  perPage   query   uint32  false   "一頁顯示幾筆 (default: 50)"
+// @Param  per_page  query   uint32  false   "一頁顯示幾筆 (default: 50)"
+// @Param  item_id   query   uint32  false   "商品ID"
 // @
 // @Success  200  object  listTransactionResp  "交易紀錄列表"
 // @Failure  400  object  StautsBadRequestResp  "不正確的查詢參數"
@@ -319,6 +322,8 @@ func (h Handler) listTransactionEndpoint(c echo.Context) (err error) {
 	}
 
 	query := model.TransactionQuery{
+		ItemID: &req.ItemID,
+
 		PerPage: req.PerPage,
 		Page:    req.Page,
 	}

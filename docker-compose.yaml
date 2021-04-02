@@ -27,7 +27,7 @@ services:
     entrypoint:
       - ./main 
       - server
-      
+
   postgres:
     image: postgres:12
     environment:

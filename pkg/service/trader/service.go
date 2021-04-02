@@ -2,7 +2,10 @@ package trader
 
 import (
 	"context"
+	"fmt"
+	"time"
 
+	"ptcg_trader/internal/config"
 	"ptcg_trader/internal/errors"
 	"ptcg_trader/internal/redis"
 	"ptcg_trader/pkg/model"
@@ -89,17 +92,23 @@ func (svc *svc) ListOrders(ctx context.Context, query model.OrderQuery) ([]model
 
 // Create a Order and check are there any orders can be matched
 func (svc *svc) CreateOrder(ctx context.Context, order *model.Order) error {
-	// // try to get redis lock
-	// lockKey := fmt.Sprintf("trader.item.%d.lock", order.ItemID)
-	// ok, err := svc.redis.RedisLock(ctx, lockKey, "", time.Second)
-	// if err != nil {
-	// 	return err
-	// }
-	// if !ok {
-	// 	return errors.Wrap(errors.ErrDataConflict, "Order failed, please try again")
-	// }
-	// defer svc.redis.RedisUnlock(ctx, lockKey, "")
+	var err error
 
+	switch config.Config().Trader.Strategy {
+	case config.TraderStrategy_RedisLock:
+		err = svc.createOrderByRedisLock(ctx, order)
+
+	case config.TraderStrategy_DatabaseRowLock:
+		err = svc.createOrderByDatabaseRowLock(ctx, order)
+
+	default: // default use DatabaseRowLock
+		err = svc.createOrderByDatabaseRowLock(ctx, order)
+	}
+
+	return err
+}
+
+func (svc *svc) createOrderByDatabaseRowLock(ctx context.Context, order *model.Order) error {
 	// order matched! change order status and create a transaction record
 	err := svc.repo.Transaction(ctx, func(ctx context.Context, txRepo repository.Repositorier) error {
 		// get database row lock
@@ -147,6 +156,75 @@ func (svc *svc) CreateOrder(ctx context.Context, order *model.Order) error {
 
 		// create transaction
 		tx := model.Transaction{
+			ItemID:      order.ItemID,
+			MakeOrderID: matchedOrder.ID,
+			TakeOrderID: order.ID,
+			FinalPrice:  decimal.Min(order.Price, matchedOrder.Price),
+		}
+		err = txRepo.CreateTransaction(ctx, &tx)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (svc *svc) createOrderByRedisLock(ctx context.Context, order *model.Order) error {
+	// try to get redis lock
+	lockKey := fmt.Sprintf("trader.item.%d.lock", order.ItemID)
+	ok, err := svc.redis.RedisLock(ctx, lockKey, "", time.Second)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return errors.Wrap(errors.ErrDataConflict, "Order failed, please try again")
+	}
+	defer svc.redis.RedisUnlock(ctx, lockKey, "")
+
+	// order matched! change order status and create a transaction record
+	err = svc.repo.Transaction(ctx, func(ctx context.Context, txRepo repository.Repositorier) error {
+		// check matched
+		matchedOrder, err := svc.match.WithRepo(txRepo).MatchOrders(ctx, order)
+		if err != nil && !errors.Is(err, errors.ErrResourceNotFound) {
+			return err
+		}
+		// no any matched, simply create order
+		if errors.Is(err, errors.ErrResourceNotFound) {
+			err := txRepo.CreateOrder(ctx, order)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
+		// update status of matched order
+		orderQuery := model.OrderQuery{
+			ID: &matchedOrder.ID,
+		}
+		orderUpdates := model.OrderUpdates{
+			Status: model.OrderStatusCompleted,
+		}
+		err = txRepo.UpdateOrders(ctx, orderQuery, orderUpdates)
+		if err != nil {
+			return err
+		}
+
+		// create the new order with completed status
+		order.Status = model.OrderStatusCompleted
+		err = txRepo.CreateOrder(ctx, order)
+		if err != nil {
+			return err
+		}
+
+		// create transaction
+		tx := model.Transaction{
+			ItemID:      order.ItemID,
 			MakeOrderID: matchedOrder.ID,
 			TakeOrderID: order.ID,
 			FinalPrice:  decimal.Min(order.Price, matchedOrder.Price),

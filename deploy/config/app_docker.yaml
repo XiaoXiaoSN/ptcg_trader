@@ -30,3 +30,6 @@ redis:
 http:
   debug: false
   address: ":17420"
+
+trader:
+  strategy: "database_row_lock"

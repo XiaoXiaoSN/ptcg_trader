@@ -16,8 +16,12 @@ let randPrice = () => {
     return (Math.random()* 9.99 + 0.01).toFixed(2)
 }
 
+// https://k6.io/docs/using-k6/options#list-of-options
 export let options = {
+    // A number specifying the number of VUs to run concurrently
     vus: 25,
+    // A list of objects that specify the target number of VUs to ramp up or down;
+    // shortcut option for a single scenario with a ramping VUs executor
     stages: [
         { duration: "40s", target: 300 },
         // { duration: "60s", target: 2500 },
@@ -26,7 +30,10 @@ export let options = {
         // { duration: "60s", target: 2500 },
         // { duration: "40s", target: 1000 },
         // { duration: "40s", target: 200 },
-    ]
+    ],
+
+    // A boolean specifying whether to throw errors on failed HTTP requests
+    throw: true,
 };
 
 export default function() {
@@ -48,7 +55,5 @@ export default function() {
     // Verify response
     check(res, {
         "status is 200": (r) => r.status === 200,
-        "status is 409": (r) => r.status === 409,
-        "status is 500": (r) => r.status === 500,
     });
 }

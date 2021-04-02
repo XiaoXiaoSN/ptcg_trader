@@ -57,7 +57,7 @@
             }
           },
           {
-            "name": "perPage",
+            "name": "per_page",
             "in": "query",
             "description": "一頁顯示幾筆 (default: 50)",
             "schema": {
@@ -110,7 +110,7 @@
         "description": " 取得指定 商品ID 的商品",
         "parameters": [
           {
-            "name": "itemID",
+            "name": "item_id",
             "in": "path",
             "description": "商品ID",
             "required": true,
@@ -164,7 +164,7 @@
             }
           },
           {
-            "name": "perPage",
+            "name": "per_page",
             "in": "query",
             "description": "一頁顯示幾筆 (default: 50)",
             "schema": {
@@ -266,7 +266,7 @@
         "description": " 取得指定 訂單ID 的訂單",
         "parameters": [
           {
-            "name": "orderID",
+            "name": "order_id",
             "in": "path",
             "description": "訂單ID",
             "required": true,
@@ -320,13 +320,23 @@
             }
           },
           {
-            "name": "perPage",
+            "name": "per_page",
             "in": "query",
             "description": "一頁顯示幾筆 (default: 50)",
             "schema": {
               "type": "integer",
               "format": "int64",
               "description": "一頁顯示幾筆 (default: 50)"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "query",
+            "description": "商品ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "商品ID"
             }
           }
         ]
@@ -448,16 +458,20 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "type": "integer"
+                  "type": "integer",
+                  "example": 1
                 },
                 "name": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "Pikachu"
                 },
                 "image_url": {
-                  "type": "string"
+                  "type": "string",
+                  "example": "https://imgur.com/NTSEJxX"
                 },
                 "creator_id": {
-                  "type": "integer"
+                  "type": "integer",
+                  "example": 1
                 },
                 "updated_at": {
                   "type": "string",
@@ -494,16 +508,19 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "type": "integer"
+                  "type": "integer",
+                  "example": 1
                 },
                 "item_id": {
-                  "type": "integer"
+                  "type": "integer",
+                  "example": 1
                 },
                 "creator_id": {
-                  "type": "integer"
+                  "type": "integer",
+                  "example": 1
                 },
                 "order_type": {
-                  "$ref": "#/components/schemas/ptcg_trader.pkg.model.OrderType"
+                  "example": "2"
                 },
                 "price": {
                   "type": "object",
@@ -547,13 +564,20 @@
               "type": "object",
               "properties": {
                 "id": {
-                  "type": "integer"
+                  "type": "integer",
+                  "example": 1
+                },
+                "item_id": {
+                  "type": "integer",
+                  "example": 1
                 },
                 "make_order_id": {
-                  "type": "integer"
+                  "type": "integer",
+                  "example": 1
                 },
                 "take_order_id": {
-                  "type": "integer"
+                  "type": "integer",
+                  "example": 2
                 },
                 "final_price": {
                   "type": "object",
@@ -585,16 +609,20 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "example": "Pikachu"
           },
           "image_url": {
-            "type": "string"
+            "type": "string",
+            "example": "https://imgur.com/NTSEJxX"
           },
           "creator_id": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1
           },
           "updated_at": {
             "type": "string",
@@ -610,16 +638,19 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1
           },
           "item_id": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1
           },
           "creator_id": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1
           },
           "order_type": {
-            "$ref": "#/components/schemas/ptcg_trader.pkg.model.OrderType"
+            "example": "2"
           },
           "price": {
             "type": "object",
