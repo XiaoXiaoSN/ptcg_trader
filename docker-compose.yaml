@@ -15,8 +15,9 @@ services:
       context: .
       dockerfile: deploy/docker/trader.dockerfile
     volumes:
-      - ./deploy:/server/deploy
+      - ./deploy/config:/server/deploy/config
     environment: 
+      CONFIG_PATH: /server/deploy/config
       CONFIG_NAME: app_docker.yaml
     # ports:
     #   - 17420:17420  

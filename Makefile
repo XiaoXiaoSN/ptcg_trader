@@ -11,7 +11,7 @@ GOTEST = $(go test -v)
 ##############################
 
 server:
-	PROJ_HOME=$(CURDIR) CONFIG_NAME=app go run main.go $@
+	PROJ_HOME=$(CURDIR) go run main.go $@
 
 docker.build:
 	docker build . -f deploy/docker/trader.dockerfile -t ptcg_trader

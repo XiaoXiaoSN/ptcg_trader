@@ -72,7 +72,7 @@ affinity: {}
 
 secret:
   config: |
-    # NOTICE: JUST EXAMPLE
+    # NOTICE: JUST AN EXAMPLE
 
     env: dev
 

@@ -19,7 +19,7 @@ let randPrice = () => {
 export let options = {
     vus: 25,
     stages: [
-        { duration: "40s", target: 1000 },
+        { duration: "40s", target: 300 },
         // { duration: "60s", target: 2500 },
         // { duration: "120s", target: 8000 },
         // { duration: "120s", target: 2000 },

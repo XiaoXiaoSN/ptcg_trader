@@ -18,7 +18,7 @@ kube.activate:
 # helm
 ##############################
 
-RELEASE_NAME := trader
+HELM_RELEASE_NAME := trader
 HELM_CHART := ./charts/trader
 HELM_VALUES_PATH := ./trader-values.yaml
 
@@ -29,5 +29,24 @@ helm.diff:
 		--set-file secret.config=$(CONFIG_FILE) \
 		--debug \
 		--values $(HELM_VALUES_PATH) \
-		$(RELEASE_NAME) \
+		$(HELM_RELEASE_NAME) \
 		$(HELM_CHART)
+
+.PHONY: helm.service helm.service.redis
+helm.service:
+	helm list
+
+HELM_REDIS_RELEASE_NAME := redis
+helm.service.redis:
+	# helm repo add bitnami https://charts.bitnami.com/bitnami
+	helm upgrade --install $(HELM_REDIS_RELEASE_NAME) bitnami/redis -n redis
+
+HELM_POSTGRES_RELEASE_NAME := postgres
+helm.service.postgres:
+	# helm repo add bitnami https://charts.bitnami.com/bitnami
+	helm upgrade --install \
+		--set postgresqlDatabase=ptcg \
+		--set postgresqlUsername=${POSTGRES_USERNAME} \
+		--set postgresqlPassword=${POSTGRES_PASSWORD} \
+		-n postgres \
+		$(HELM_POSTGRES_RELEASE_NAME) bitnami/postgresql 
