@@ -1,5 +1,7 @@
 -- +goose Up
-CREATE TABLE items
+CREATE SCHEMA trader;
+
+CREATE TABLE trader.items
 (
     id         bigserial                                  NOT NULL CONSTRAINT items_pk PRIMARY KEY,
     name       varchar(200) DEFAULT ''::character varying NOT NULL,
@@ -9,7 +11,7 @@ CREATE TABLE items
     created_at timestamp    DEFAULT now()                 NOT NULL
 );
 
-CREATE TABLE orders
+CREATE TABLE trader.orders
 (
     id         bigserial               NOT NULL CONSTRAINT orders_pk PRIMARY KEY,
     item_id    bigint    DEFAULT 0     NOT NULL,
@@ -21,7 +23,7 @@ CREATE TABLE orders
     created_at timestamp DEFAULT now() NOT NULL
 );
 
-CREATE TABLE users
+CREATE TABLE trader.users
 (
     id            bigserial                                  NOT NULL CONSTRAINT users_pk PRIMARY KEY,
     display_name  varchar(200) DEFAULT ''::character varying NOT NULL,
@@ -32,7 +34,7 @@ CREATE TABLE users
     created_at    timestamp    DEFAULT now()                 NOT NULL
 );
 
-CREATE TABLE transactions
+CREATE TABLE trader.transactions
 (
     id            bigserial               NOT NULL CONSTRAINT transactions_p PRIMARY KEY,
     make_order_id bigint    DEFAULT 0     NOT NULL,
@@ -44,7 +46,7 @@ CREATE TABLE transactions
 
 
 -- +goose Down
-DROP TABLE IF EXISTS items;
-DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS trader.items;
+DROP TABLE IF EXISTS trader.orders;
+DROP TABLE IF EXISTS trader.users;
+DROP TABLE IF EXISTS trader.transactions;

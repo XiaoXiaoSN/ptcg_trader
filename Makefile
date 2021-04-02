@@ -14,7 +14,10 @@ server:
 	PROJ_HOME=$(CURDIR) go run main.go $@
 
 docker.build:
-	docker build . -f deploy/docker/trader.dockerfile -t ptcg_trader
+	docker build . -f deploy/docker/trader.dockerfile -t xiao4011/ptcg_trader
+
+docker.push:
+	docker push xiao4011/ptcg_trader
 
 docker.server:
 	docker-compose up -d --build --force-recreate --scale trader=3

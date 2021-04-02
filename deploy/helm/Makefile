@@ -32,14 +32,24 @@ helm.diff:
 		$(HELM_RELEASE_NAME) \
 		$(HELM_CHART)
 
+
 .PHONY: helm.service helm.service.redis
 helm.service:
-	helm list
+	helm upgrade --install \
+		--set-file secret.config=$(CONFIG_FILE) \
+		--values $(HELM_VALUES_PATH) \
+		-n $(KUBE_NS) \
+		$(HELM_RELEASE_NAME) \
+		$(HELM_CHART)
 
 HELM_REDIS_RELEASE_NAME := redis
 helm.service.redis:
 	# helm repo add bitnami https://charts.bitnami.com/bitnami
-	helm upgrade --install $(HELM_REDIS_RELEASE_NAME) bitnami/redis -n redis
+	helm upgrade --install \
+		--set cluster.enabled=false \
+		--set password=${REDIS_PASSWORD} \
+		-n redis \
+		$(HELM_REDIS_RELEASE_NAME) bitnami/redis
 
 HELM_POSTGRES_RELEASE_NAME := postgres
 helm.service.postgres:

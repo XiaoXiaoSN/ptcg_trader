@@ -64,16 +64,19 @@ func SetupDatabase(database config.DatabaseConfig) (*gorm.DB, error) {
 		}
 		conn, err = gorm.Open(dialector, &gormConfig)
 		if err != nil {
+			log.Warn().Msgf("gorm failed to open database connection: %v", err)
 			return err
 		}
 
 		sqlDB, err := conn.DB()
 		if err != nil {
+			log.Warn().Msgf("failed to get sql.db from gorm.DB instance: %v", err)
 			return err
 		}
 
 		err = sqlDB.Ping()
 		if err != nil {
+			log.Warn().Msgf("ping db failed: %v", err)
 			return err
 		}
 

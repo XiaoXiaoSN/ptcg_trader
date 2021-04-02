@@ -23,7 +23,6 @@ containers:
     path: /ping 
     port: 17420
   volumeMountsPath: /server/config
-  secretName: ptcg-trader-config
 
 service:
   type: ClusterIP
@@ -69,6 +68,8 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+secretName: ptcg-trader-config
 
 secret:
   config: |

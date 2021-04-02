@@ -9,6 +9,7 @@ import (
 
 	"github.com/cenk/backoff"
 	"github.com/go-redis/redis/v8"
+	"github.com/rs/zerolog/log"
 )
 
 // Redis ...
@@ -84,6 +85,7 @@ func NewRedis(cfg config.RedisConfig) (Redis, error) {
 		})
 		err := client.Ping(context.Background()).Err()
 		if err != nil {
+			log.Warn().Msgf("ping occurs error after connecting to redis: %s", err)
 			return errors.Wrapf(errors.ErrInternalError, "ping occurs error after connecting to redis: %s", err)
 		}
 		return nil

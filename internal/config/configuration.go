@@ -16,11 +16,11 @@ var config Configuration
 type Configuration struct {
 	fx.Out
 
-	Env      string `yaml:"env" env:"ENVIRONMENT" default:"product"`
-	Log      LogConfig
-	Database DatabaseConfig
-	Redis    RedisConfig
-	HTTP     HTTPConfig
+	Env      string         `yaml:"env" env:"ENVIRONMENT" default:"product"`
+	Log      LogConfig      `yaml:"log"`
+	Database DatabaseConfig `yaml:"database"`
+	Redis    RedisConfig    `yaml:"redis"`
+	HTTP     HTTPConfig     `yaml:"http"`
 }
 
 // New load App configuration
