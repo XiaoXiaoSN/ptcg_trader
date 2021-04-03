@@ -6,6 +6,7 @@ log:
   environment: dev
   format: "console"
   app_id: ptcg_trader
+  # no_color: true
 
 database:
   debug: true

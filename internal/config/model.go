@@ -12,6 +12,7 @@ type LogConfig struct {
 	Level       string `yaml:"level" env:"LOG_LEVEL"`
 	Environment string `yaml:"environment" env:"LOG_ENVIRONMENT"`
 	Format      string `yaml:"format" env:"LOG_FORMAT"`
+	NoColor     bool   `yaml:"no_color" env:"LOG_NO_COLOR"`
 	AppID       string `yaml:"app_id" env:"LOG_APP_ID"`
 }
 

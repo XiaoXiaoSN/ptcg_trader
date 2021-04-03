@@ -51,6 +51,7 @@ func InitLog(logConfig config.LogConfig) (err error) {
 			FormatTimestamp: func(v interface{}) string {
 				return fmt.Sprintf("%s", v)
 			},
+			NoColor: logConfig.NoColor,
 		}
 		logger = logger.Output(output)
 
