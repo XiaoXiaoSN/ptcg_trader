@@ -95,10 +95,10 @@ func (svc *svc) CreateOrder(ctx context.Context, order *model.Order) error {
 	var err error
 
 	switch config.Config().Trader.Strategy {
-	case config.TraderStrategy_RedisLock:
+	case config.TraderStrategyRedisLock:
 		err = svc.createOrderByRedisLock(ctx, order)
 
-	case config.TraderStrategy_DatabaseRowLock:
+	case config.TraderStrategyDatabaseRowLock:
 		err = svc.createOrderByDatabaseRowLock(ctx, order)
 
 	default: // default use DatabaseRowLock

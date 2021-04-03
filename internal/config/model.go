@@ -88,9 +88,9 @@ type TraderStrategy string
 
 // TraderStrategy enum
 var (
-	TraderStrategy_Unknown         TraderStrategy = ""
-	TraderStrategy_DatabaseRowLock TraderStrategy = "database_row_lock"
-	TraderStrategy_RedisLock       TraderStrategy = "redis_lock"
+	TraderStrategyUnknown         TraderStrategy = ""
+	TraderStrategyDatabaseRowLock TraderStrategy = "database_row_lock"
+	TraderStrategyRedisLock       TraderStrategy = "redis_lock"
 )
 
 // TraderConfig ...
