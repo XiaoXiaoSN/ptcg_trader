@@ -19,7 +19,7 @@ let randPrice = () => {
 // https://k6.io/docs/using-k6/options#list-of-options
 export let options = {
     // A number specifying the number of VUs to run concurrently
-    vus: 25,
+    vus: 250,
     // A list of objects that specify the target number of VUs to ramp up or down;
     // shortcut option for a single scenario with a ramping VUs executor
     stages: [
@@ -36,6 +36,8 @@ export let options = {
     throw: true,
 };
 
+const traderURL = __ENV.TRADER_URL ? __ENV.TRADER_URL : 'http://localhost:4000'
+
 export default function() {
     let req_data = {
         "item_id": randItemID(),
@@ -50,7 +52,7 @@ export default function() {
         "Content-Type": "application/json",
         "X-Identity-Id": "1",
     }
-    let res = http.post("http://localhost:4000/apis/v1/orders", body, { headers: headers});
+    let res = http.post(`${traderURL}/apis/v1/orders`, body, { headers: headers});
 
     // Verify response
     check(res, {

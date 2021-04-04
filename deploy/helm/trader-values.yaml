@@ -51,6 +51,13 @@ env:
   - name: CONFIG_PATH
     value: "/server/config"
 
+ingress:
+  enabled: true
+  host: "trader.ptcg.10oz.tw"
+  tls:
+    enabled: true
+    secretName: trader-ptcg-10oz-tw-tls
+
 resources:
   {}
   # We usually recommend not to specify default resources and to leave this as a conscious

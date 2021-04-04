@@ -66,6 +66,8 @@ helm.service.postgres:
 # Something About Infra
 ##############################
 
+.PHONY: helm.service.prometheus-op helm.service.loki helm.service.cert-manager kube.issuer.trader
+
 HELM_PROM_OP_RELEASE_NAME := prom-op
 helm.service.prometheus-op:
 	# helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -83,3 +85,27 @@ helm.service.loki:
 		--set fluent-bit.enabled=true \
 		--set promtail.enabled=false \
 		grafana/loki-stack -n logging
+
+
+HELM_CERT_MANAGER_RELEASE_NAME := cert-manager
+helm.service.cert-manager:
+	# helm repo add jetstack https://charts.jetstack.io
+	# kubectl create namespace cert-manager
+	helm upgrade --install $(HELM_CERT_MANAGER_RELEASE_NAME) \
+		--set installCRDs=true \
+		jetstack/cert-manager -n cert-manager
+
+kube.issuer.trader:
+	cp cert-manager-issuer.yaml.example cert-manager-issuer.yaml
+
+	# replace values
+	sed -i '' -e 's/SECRET_ACCESS_KEY_BASE64/${SECRET_ACCESS_KEY_BASE64}/' cert-manager-issuer.yaml
+	sed -i '' -e 's/ACCESS_KEY_ID/${ACCESS_KEY_ID}/' cert-manager-issuer.yaml
+	sed -i '' -e 's/HOSTED_ZONE_ID/${HOSTED_ZONE_ID}/' cert-manager-issuer.yaml
+	sed -i '' -e 's/HELM_CERT_MANAGER_RELEASE_NAME/$(HELM_CERT_MANAGER_RELEASE_NAME)/' cert-manager-issuer.yaml
+	# sed -i "s/SECRET_ACCESS_KEY_BASE64/${SECRET_ACCESS_KEY_BASE64}/" cert-manager-issuer.yaml
+	# sed -i "s/ACCESS_KEY_ID/${ACCESS_KEY_ID}/" cert-manager-issuer.yaml
+	# sed -i "s/HOSTED_ZONE_ID/${HOSTED_ZONE_ID}/" cert-manager-issuer.yaml
+	# sed -i "s/HELM_CERT_MANAGER_RELEASE_NAME/${HELM_CERT_MANAGER_RELEASE_NAME}/" cert-manager-issuer.yaml
+
+	kubectl apply -f cert-manager-issuer.yaml

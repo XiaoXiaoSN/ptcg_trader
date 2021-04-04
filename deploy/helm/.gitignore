@@ -1,2 +1,4 @@
 *app.yaml
 .env
+
+cert-manager-issuer.yaml
