@@ -14,7 +14,7 @@ import (
 	fx "go.uber.org/fx"
 )
 
-// ServerCmd is the service enteripoint
+// MatcherCmd is the service enteripoint
 var MatcherCmd = &cobra.Command{
 	RunE: runMatcherCmd,
 	Use:  "matcher",

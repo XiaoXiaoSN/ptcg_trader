@@ -20,6 +20,7 @@ func NewOrderEngine() *OrderEngine {
 	}
 }
 
+// OrderEngine ...
 type OrderEngine struct {
 	Tree *rbt.Tree
 	lock *sync.Mutex
