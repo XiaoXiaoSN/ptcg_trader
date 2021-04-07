@@ -11,7 +11,6 @@ import (
 	"ptcg_trader/pkg/service"
 
 	rbt "github.com/emirpasic/gods/trees/redblacktree"
-	"github.com/emirpasic/gods/utils"
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 	"go.uber.org/fx"
@@ -25,6 +24,8 @@ type MatchParams struct {
 }
 
 type svc struct {
+	readyFlag chan struct{}
+
 	repo repository.Repositorier
 
 	buyOrderEngines  map[int64]*OrderEngine
@@ -33,12 +34,18 @@ type svc struct {
 
 // NewMatch support DI tool to create a new service instance
 func NewMatch(params MatchParams) service.Matcher {
-	return &svc{
-		repo: params.Repo,
+	svc := &svc{
+		readyFlag: make(chan struct{}),
+		repo:      params.Repo,
 
 		buyOrderEngines:  make(map[int64]*OrderEngine), // map[itemID]order-RB-Tree
 		sellOrderEngines: make(map[int64]*OrderEngine), // map[itemID]order-RB-Tree
 	}
+
+	ctx := log.Logger.WithContext(context.Background())
+	go svc.loadUncompletedOrders(ctx)
+
+	return svc
 }
 
 func (svc *svc) WithRepo(repo repository.Repositorier) service.Matcher {
@@ -60,33 +67,73 @@ func (svc *svc) MatchOrders(ctx context.Context, order *model.Order) (*model.Ord
 	return &matchedOrder, nil
 }
 
+// loadUncompletedOrders from database load orders in memory
+func (svc *svc) loadUncompletedOrders(ctx context.Context) error {
+	log.Ctx(ctx).Info().Msg("loadUncompletedOrders start")
+	defer log.Ctx(ctx).Info().Msg("loadUncompletedOrders done")
+
+	query := model.OrderQuery{
+		Status:  model.OrderStatusProgress,
+		PerPage: -1,
+	}
+	orders, err := svc.repo.ListOrders(ctx, query)
+	if err != nil {
+		log.Ctx(ctx).Error().Msgf("load uncompleted order failed: %+v", err)
+		return err
+	}
+
+	for i := range orders {
+		switch orders[i].OrderType {
+		case model.OrderTypeBuy:
+			oe, isExist := svc.buyOrderEngines[orders[i].ItemID]
+			if !isExist {
+				oe = NewOrderEngine()
+				svc.buyOrderEngines[orders[i].ItemID] = oe
+			}
+			oe.Append(&orders[i])
+
+		case model.OrderTypeSell:
+			oe, isExist := svc.sellOrderEngines[orders[i].ItemID]
+			if !isExist {
+				oe = NewOrderEngine()
+				svc.sellOrderEngines[orders[i].ItemID] = oe
+			}
+			oe.Append(&orders[i])
+		}
+	}
+
+	close(svc.readyFlag)
+	return nil
+}
+
 // AsyncMatchOrders ...
 // NOTE: A trader can only buy or sell 1 card in 1 order. QQ
 func (svc *svc) AsyncMatchOrders(ctx context.Context, order *model.Order) error {
-	// save order to redis?
+	<-svc.readyFlag // wait init
 
 	takeSideOrderEngine, makeSideOrderEngine := svc.getOrderEngines(ctx, order)
 	if takeSideOrderEngine == nil || makeSideOrderEngine == nil {
 		return errors.WithMessage(errors.ErrBadRequest, "unknown order type")
 	}
-	makeSideOrderEngine.lock.Lock()
-	defer makeSideOrderEngine.lock.Unlock()
 
 	// not matched, insert into rb-tree
-	if takeSideOrderEngine.Tree.Size() == 0 {
-		subTree := rbt.NewWith(utils.Int64Comparator)
-		subTree.Put(order.ID, order)
-		makeSideOrderEngine.Tree.Put(order.Price, subTree)
+	if makeSideOrderEngine.Tree.Size() == 0 {
+		err := svc.repo.CreateOrder(ctx, order)
+		if err != nil {
+			log.Ctx(ctx).Error().Msgf("failed to create order: %+v", err)
+			return err
+		}
 
+		takeSideOrderEngine.Append(order)
 		return nil
 	}
 
-	takeSideOrderEngine.lock.Lock()
-	go svc.asyncMatchOrders(ctx, order, takeSideOrderEngine)
+	svc.asyncMatchOrders(ctx, order, makeSideOrderEngine)
+
 	return nil
 }
 
-func (svc *svc) asyncMatchOrders(ctx context.Context, order *model.Order, takeSideOrderEngine *OrderEngine) (err error) {
+func (svc *svc) asyncMatchOrders(ctx context.Context, takeOrder *model.Order, makeSideOrderEngine *OrderEngine) (err error) {
 	defer func() {
 		recoverError()
 		if err != nil {
@@ -100,29 +147,29 @@ func (svc *svc) asyncMatchOrders(ctx context.Context, order *model.Order, takeSi
 		timeTree                  *rbt.Tree
 		orderTreeKey, timeTreeKey interface{}
 	)
-	switch order.OrderType {
+	switch takeOrder.OrderType {
 	case model.OrderTypeBuy:
 		// buy order, find the order with lowest price
-		orderNode := takeSideOrderEngine.Tree.Left()
+		orderNode := makeSideOrderEngine.Tree.Left()
 		orderTreeKey = orderNode.Key
 
-		timeTree := orderNode.Value.(*rbt.Tree)
+		timeTree = orderNode.Value.(*rbt.Tree)
 		timeNode := timeTree.Left()
 		timeTreeKey = timeNode.Key
 		makeOrder = timeNode.Value.(*model.Order)
 
 	case model.OrderTypeSell:
 		// sell order, find the order with highest price
-		orderNode := takeSideOrderEngine.Tree.Right()
+		orderNode := makeSideOrderEngine.Tree.Right()
 		orderTreeKey = orderNode.Key
 
-		timeTree := orderNode.Value.(*rbt.Tree)
+		timeTree = orderNode.Value.(*rbt.Tree)
 		timeNode := timeTree.Left()
 		timeTreeKey = timeNode.Key
 		makeOrder = timeNode.Value.(*model.Order)
 
 	default:
-		return errors.WithMessagef(errors.ErrBadRequest, "Unknown order type: %d", order.OrderType)
+		return errors.WithMessagef(errors.ErrBadRequest, "Unknown order type: %d", takeOrder.OrderType)
 	}
 
 	// order matched! change order status and create a transaction record
@@ -140,7 +187,7 @@ func (svc *svc) asyncMatchOrders(ctx context.Context, order *model.Order, takeSi
 		}
 
 		// create the new order with completed status
-		orderQuery.ID = &order.ID
+		orderQuery.ID = &takeOrder.ID
 		err = txRepo.UpdateOrders(ctx, orderQuery, orderUpdates)
 		if err != nil {
 			return err
@@ -148,10 +195,10 @@ func (svc *svc) asyncMatchOrders(ctx context.Context, order *model.Order, takeSi
 
 		// create transaction
 		tx := model.Transaction{
-			ItemID:      order.ItemID,
+			ItemID:      takeOrder.ItemID,
 			MakeOrderID: makeOrder.ID,
-			TakeOrderID: order.ID,
-			FinalPrice:  decimal.Min(order.Price, makeOrder.Price),
+			TakeOrderID: takeOrder.ID,
+			FinalPrice:  decimal.Min(takeOrder.Price, makeOrder.Price),
 		}
 		err = txRepo.CreateTransaction(ctx, &tx)
 		if err != nil {
@@ -164,9 +211,9 @@ func (svc *svc) asyncMatchOrders(ctx context.Context, order *model.Order, takeSi
 		return err
 	}
 
-	// remove makeOrder from takeSideOrderEngine
+	// remove makeOrder from makeSideOrderEngine
 	if timeTree.Size() == 1 {
-		takeSideOrderEngine.Tree.Remove(orderTreeKey)
+		makeSideOrderEngine.Tree.Remove(orderTreeKey)
 	} else {
 		timeTree.Remove(timeTreeKey)
 	}
@@ -178,23 +225,23 @@ func (svc *svc) getOrderEngines(ctx context.Context, order *model.Order) (takeSi
 	switch order.OrderType {
 	case model.OrderTypeBuy:
 		var ok bool
-		takeSide, ok = svc.sellOrderEngines[order.ItemID]
-		if !ok {
-			takeSide = NewOrderEngine()
-			svc.sellOrderEngines[order.ItemID] = takeSide
-		}
-		makeSide, ok = svc.buyOrderEngines[order.ItemID]
-		if !ok {
-			makeSide = NewOrderEngine()
-			svc.buyOrderEngines[order.ItemID] = makeSide
-		}
-
-	case model.OrderTypeSell:
-		var ok bool
 		takeSide, ok = svc.buyOrderEngines[order.ItemID]
 		if !ok {
 			takeSide = NewOrderEngine()
 			svc.buyOrderEngines[order.ItemID] = takeSide
+		}
+		makeSide, ok = svc.sellOrderEngines[order.ItemID]
+		if !ok {
+			makeSide = NewOrderEngine()
+			svc.sellOrderEngines[order.ItemID] = makeSide
+		}
+
+	case model.OrderTypeSell:
+		var ok bool
+		takeSide, ok = svc.sellOrderEngines[order.ItemID]
+		if !ok {
+			takeSide = NewOrderEngine()
+			svc.sellOrderEngines[order.ItemID] = takeSide
 		}
 		makeSide, ok = svc.buyOrderEngines[order.ItemID]
 		if !ok {

@@ -2,7 +2,7 @@
 env: dev
 
 log:
-  level: "error"
+  level: "info"
   environment: dev
   format: "console"
   app_id: ptcg_trader

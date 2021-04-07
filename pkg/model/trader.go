@@ -40,7 +40,8 @@ type Order struct {
 
 // OrderQuery ...
 type OrderQuery struct {
-	ID *int64 `json:"id" gorm:"column:id"`
+	ID     *int64      `json:"id" gorm:"column:id"`
+	Status OrderStatus `json:"status" gorm:"column:status"`
 
 	PerPage int `json:"per_page" gorm:"-"`
 	Page    int `json:"page" gorm:"-"`

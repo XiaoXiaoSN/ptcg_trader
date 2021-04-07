@@ -103,16 +103,19 @@ func (repo *_repository) CountOrders(ctx context.Context, query model.OrderQuery
 func (repo *_repository) ListOrders(ctx context.Context, query model.OrderQuery) ([]model.Order, error) {
 	var orderList []model.Order
 
-	db := buildOrderQuery(repo.DB(ctx), query)
-	if query.PerPage <= 0 {
-		query.PerPage = DefaultPerPage
+	db := buildOrderQuery(repo.DB(ctx), query).
+		Model(&model.Order{})
+
+	if query.PerPage >= 0 {
+		if query.PerPage == 0 {
+			query.PerPage = DefaultPerPage
+		}
+		if query.Page == 0 {
+			query.Page = 1
+		}
+		db = db.Limit(query.PerPage).
+			Offset((query.Page - 1) * query.PerPage)
 	}
-	if query.Page <= 0 {
-		query.Page = 1
-	}
-	db = db.Model(&model.Order{}).
-		Limit(query.PerPage).
-		Offset((query.Page - 1) * query.PerPage)
 
 	err := db.Find(&orderList).Error
 	if err != nil {

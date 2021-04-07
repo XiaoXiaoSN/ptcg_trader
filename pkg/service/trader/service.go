@@ -252,33 +252,19 @@ func (svc *svc) createOrderByRedisLock(ctx context.Context, order *model.Order) 
 }
 
 func (svc *svc) createOrderByAsyncMemoryMatch(ctx context.Context, order *model.Order) error {
-	// insret order into database and publish it to the message queue
-	err := svc.repo.Transaction(ctx, func(ctx context.Context, txRepo repository.Repositorier) error {
-		err := txRepo.CreateOrder(ctx, order)
-		if err != nil {
-			return err
-		}
-
-		// we classify all nats-streaming channels into N channels, channelID = id % N
-		// example for N=4:
-		//   topic.1 => topic.1
-		//   topic.2 => topic.2
-		//   topic.5 => topic.1
-		// https://github.com/nats-io/nats-streaming-server/issues/524
-		channelCount  := int64(4)
-		channelID := fmt.Sprintf("%s.%d", model.TopicCreateOrder, order.ItemID%channelCount)
-		err = svc.stan.Pub(ctx, model.TopicCreateOrder, order)
-		if err != nil {
-			log.Ctx(ctx).Error().
-				Str("topic", channelID).
-				Msg("failed to publish topic to nats streaming")
-			return err
-		}
-
-		return nil
-	})
+	// we classify all nats-streaming channels into N channels, channelID = id % N
+	// example for N=4:
+	//   topic.1 => topic.1
+	//   topic.2 => topic.2
+	//   topic.5 => topic.1
+	// https://github.com/nats-io/nats-streaming-server/issues/524
+	channelCount := int64(4)
+	channelID := fmt.Sprintf("%s.%d", model.TopicCreateOrder, order.ItemID%channelCount)
+	err := svc.stan.Pub(ctx, channelID, order)
 	if err != nil {
-		log.Ctx(ctx).Warn().Msgf("failed to create order on TraderStrategyAsyncInMemoryMatching mode: %+v", err)
+		log.Ctx(ctx).Error().
+			Str("topic", channelID).
+			Msg("failed to publish topic to nats streaming")
 		return err
 	}
 

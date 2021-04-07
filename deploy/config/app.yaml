@@ -9,7 +9,7 @@ log:
   # no_color: true
 
 database:
-  debug: true
+  debug: false
   host: localhost
   port: 5432
   username: local
@@ -36,8 +36,8 @@ trader:
   strategy: "async_in_memory_matching"
 
 stan:
-  debug: true
-  address: localhost:4222
+  debug: false
+  address: nats://localhost:4222
   cluster_id: "ptcg"
   client_id: "trader"
   group_name: "ptcg"

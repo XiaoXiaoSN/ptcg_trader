@@ -22,8 +22,7 @@ docker.push:
 docker.server:
 	docker-compose up -d --build --force-recreate \
 		--scale trader=3 \
-		--scale stan=3 \
-		nginx trader postgres redis swagger stan
+		nginx trader matcher postgres redis swagger stan
 
 gencode: swagger.gen mock.gen
 

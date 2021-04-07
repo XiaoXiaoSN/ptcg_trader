@@ -31,7 +31,8 @@ func init() {
 
 // RegisterChannel register topic
 func RegisterChannel(handler *Handler) error {
-	ctx := context.Background()
+	logger := log.With().Str("handler", "stan").Logger()
+	ctx := logger.WithContext(context.Background())
 
 	var indexKeysStr string = "1,2,3,4"
 	if idx := os.Getenv("INDEX"); idx != "" {

@@ -14,6 +14,7 @@ services:
     build:
       context: .
       dockerfile: deploy/docker/trader.dockerfile
+    image: xiao4011/ptcg_trader
     volumes:
       - ./deploy/config:/server/deploy/config
     environment: 
@@ -24,9 +25,23 @@ services:
     depends_on:
       - postgres
       - redis
+      - stan
     entrypoint:
       - ./main 
       - server
+
+  matcher:
+    image: xiao4011/ptcg_trader
+    volumes:
+      - ./deploy/config:/server/deploy/config
+    environment: 
+      CONFIG_PATH: /server/deploy/config
+      CONFIG_NAME: app_docker.yaml
+    depends_on:
+      - trader
+    entrypoint:
+      - ./main 
+      - matcher
 
   postgres:
     image: postgres:12

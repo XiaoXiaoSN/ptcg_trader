@@ -68,7 +68,7 @@ func TestHandler_CreateOrderEndpoint(t *testing.T) {
 					"id": 1,
 					"item_id": 1,
 					"order_type": 1,
-					"price": "3"
+					"price": "3.8"
 				}`),
 			},
 			wantErr: false,
@@ -83,7 +83,7 @@ func TestHandler_CreateOrderEndpoint(t *testing.T) {
 					"id": 2,
 					"item_id": 1,
 					"order_type": 2,
-					"price": "3"
+					"price": "3.4"
 				}`),
 			},
 			wantErr: false,
