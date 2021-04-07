@@ -32,4 +32,12 @@ http:
 
 trader:
   # strategy: "redis_lock"
-  strategy: "database_row_lock"
+  # strategy: "database_row_lock"
+  strategy: "async_in_memory_matching"
+
+stan:
+  debug: true
+  address: localhost:4222
+  cluster_id: "ptcg"
+  client_id: "trader"
+  group_name: "ptcg"

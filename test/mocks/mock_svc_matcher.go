@@ -18,6 +18,20 @@ type MockMatcher struct {
 	mock.Mock
 }
 
+// AsyncMatchOrders provides a mock function with given fields: ctx, order
+func (_m *MockMatcher) AsyncMatchOrders(ctx context.Context, order *model.Order) error {
+	ret := _m.Called(ctx, order)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Order) error); ok {
+		r0 = rf(ctx, order)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // MatchOrders provides a mock function with given fields: ctx, order
 func (_m *MockMatcher) MatchOrders(ctx context.Context, order *model.Order) (*model.Order, error) {
 	ret := _m.Called(ctx, order)

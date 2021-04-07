@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "fullname" . }}
   labels:
@@ -10,11 +10,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: {{ include "name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-    type: RollingUpdate
+  serviceName: {{ template "fullname" . }}
   template:
     metadata:
       labels:
@@ -64,6 +60,10 @@ spec:
           volumeMounts:
             - name: config
               mountPath: {{ .Values.containers.volumeMountsPath }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "export INDEX=${HOSTNAME##*-}"]
       volumes:
         - name: config
           secret:

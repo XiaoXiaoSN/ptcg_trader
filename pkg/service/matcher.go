@@ -13,4 +13,6 @@ type Matcher interface {
 
 	// MatchOrders match orders
 	MatchOrders(ctx context.Context, order *model.Order) (*model.Order, error)
+	// AsyncMatchOrders match orders async
+	AsyncMatchOrders(ctx context.Context, order *model.Order) error
 }

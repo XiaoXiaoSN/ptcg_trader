@@ -32,4 +32,13 @@ http:
   address: ":17420"
 
 trader:
-  strategy: "database_row_lock"
+  # strategy: "redis_lock"
+  # strategy: "database_row_lock"
+  strategy: "async_in_memory_matching"
+
+stan:
+  debug: false
+  address: stan:4222
+  cluster_id: "ptcg"
+  client_id: "trader"
+  group_name: "ptcg"

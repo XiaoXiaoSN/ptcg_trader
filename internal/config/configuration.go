@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+
 	"ptcg_trader/internal/errors"
 
 	"github.com/jinzhu/configor"
@@ -22,6 +23,7 @@ type Configuration struct {
 	Redis    RedisConfig    `yaml:"redis"`
 	HTTP     HTTPConfig     `yaml:"http"`
 	Trader   TraderConfig   `yaml:"trader"`
+	Stan     StanConfig     `yaml:"stan"`
 }
 
 // New load App configuration

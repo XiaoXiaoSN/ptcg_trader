@@ -203,6 +203,7 @@ func (h Handler) createOrderEndpoint(c echo.Context) (err error) {
 		return errors.Wrap(errors.ErrBadRequest, "order Price is greater then 10")
 	}
 
+	// var creatorID int64
 	creatorID, err := ctxutil.IdentityIDFromCtx(ctx)
 	if err != nil {
 		return err

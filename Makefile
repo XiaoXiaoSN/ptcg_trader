@@ -3,14 +3,14 @@ MAKEFLAGS += -j5
 PRJ_PATH = $(PWD)
 GOTEST = $(go test -v)
 
-.PHONY: server build.docker swagger.server swagger.gen
+.PHONY: server matcher build.docker swagger.server swagger.gen
 
 
 ##############################
 # run service
 ##############################
 
-server:
+server matcher:
 	PROJ_HOME=$(CURDIR) go run main.go $@
 
 docker.build:
@@ -20,7 +20,10 @@ docker.push:
 	docker push xiao4011/ptcg_trader
 
 docker.server:
-	docker-compose up -d --build --force-recreate --scale trader=3
+	docker-compose up -d --build --force-recreate \
+		--scale trader=3 \
+		--scale stan=3 \
+		nginx trader postgres redis swagger stan
 
 gencode: swagger.gen mock.gen
 

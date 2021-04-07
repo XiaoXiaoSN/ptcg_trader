@@ -88,12 +88,31 @@ type TraderStrategy string
 
 // TraderStrategy enum
 var (
-	TraderStrategyUnknown         TraderStrategy = ""
-	TraderStrategyDatabaseRowLock TraderStrategy = "database_row_lock"
-	TraderStrategyRedisLock       TraderStrategy = "redis_lock"
+	TraderStrategyUnknown               TraderStrategy = ""
+	TraderStrategyDatabaseRowLock       TraderStrategy = "database_row_lock"
+	TraderStrategyRedisLock             TraderStrategy = "redis_lock"
+	TraderStrategyAsyncInMemoryMatching TraderStrategy = "async_in_memory_matching"
 )
 
 // TraderConfig ...
 type TraderConfig struct {
 	Strategy TraderStrategy `yaml:"strategy" env:"TRADER_STRATEGY"`
+}
+
+// KafkaConfig for kafka client
+type KafkaConfig struct {
+	Debug          bool     `yaml:"debug" env:"KAFKA_DEBUG"`
+	BrokerList     []string `yaml:"address" env:"KAFKA_ADDRESS"`
+	ClientID       string   `yaml:"client_id" env:"KAFKA_CLIENT_ID"`
+	GroupName      string   `yaml:"group_name" env:"KAFKA_GROUP_NAME"`
+	OffsetsInitial int64    `yaml:"offsets_initial" env:"KAFKA_OFFSETS_INITIAL"`
+}
+
+// StanConfig for stan client
+type StanConfig struct {
+	Debug       bool   `yaml:"debug" env:"STAN_DEBUG"`
+	Address     string `yaml:"address" env:"STAN_ADDRESS"`
+	ClusterID   string `yaml:"cluster_id" env:"STAN_CLUSTER_ID"`
+	ClientID    string `yaml:"client_id" env:"STAN_CLIENT_ID"`
+	DurableName string `yaml:"durable_name" env:"STAN_DURABLE_NAME"`
 }

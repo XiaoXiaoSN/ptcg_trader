@@ -33,7 +33,8 @@ helm.diff:
 		$(HELM_CHART)
 
 
-.PHONY: helm.service helm.service.redis
+.PHONY: helm.service helm.matcher
+
 helm.service:
 	helm upgrade --install \
 		--set-file secret.config=$(CONFIG_FILE) \
@@ -41,6 +42,24 @@ helm.service:
 		-n $(KUBE_NS) \
 		$(HELM_RELEASE_NAME) \
 		$(HELM_CHART)
+
+HELM_MATCHER_RELEASE_NAME := matcher
+HELM_MATCHER_CHART := ./charts/matcher
+HELM_MATCHER_VALUES_PATH := ./matcher-values.yaml
+helm.matcher:
+	helm upgrade --install \
+		--set-file secret.config=$(CONFIG_FILE) \
+		--values $(HELM_MATCHER_VALUES_PATH) \
+		-n $(KUBE_NS) \
+		$(HELM_MATCHER_RELEASE_NAME) \
+		$(HELM_MATCHER_CHART)
+
+
+##############################
+# Something About Middleware
+##############################
+
+.PHONY: helm.service.redis helm.service.postgres
 
 HELM_REDIS_RELEASE_NAME := redis
 helm.service.redis:
@@ -66,7 +85,7 @@ helm.service.postgres:
 # Something About Infra
 ##############################
 
-.PHONY: helm.service.prometheus-op helm.service.loki helm.service.cert-manager kube.issuer.trader
+.PHONY: helm.service.prometheus-op helm.service.loki helm.service.cert-manager kube.issuer.trader helm.service.stan
 
 HELM_PROM_OP_RELEASE_NAME := prom-op
 helm.service.prometheus-op:
@@ -109,3 +128,12 @@ kube.issuer.trader:
 	# sed -i "s/HELM_CERT_MANAGER_RELEASE_NAME/${HELM_CERT_MANAGER_RELEASE_NAME}/" cert-manager-issuer.yaml
 
 	kubectl apply -f cert-manager-issuer.yaml
+
+HELM_STAN_RELEASE_NAME := ptcg-stan
+HELM_STAN_NAMESPACE := stan
+helm.service.stan:
+	# helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+	# kubectl create namespace stan
+	helm upgrade --install $(HELM_STAN_RELEASE_NAME) \
+		nats/stan -n $(HELM_STAN_NAMESPACE)
+

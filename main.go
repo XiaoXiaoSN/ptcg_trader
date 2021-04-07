@@ -20,10 +20,13 @@ func init() {
 
 func main() {
 	// go func() {
-	// 	log.Info().Msgf("listen http port 6060: %+v", http.ListenAndServe("localhost:6060", nil))
+	// 	log.Printf("listen http port 6060: %+v", http.ListenAndServe("localhost:6060", nil))
 	// }()
 
-	rootCmd.AddCommand(cmd.ServerCmd)
+	rootCmd.AddCommand(
+		cmd.ServerCmd,
+		cmd.MatcherCmd,
+	)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

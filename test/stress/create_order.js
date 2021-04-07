@@ -19,11 +19,11 @@ let randPrice = () => {
 // https://k6.io/docs/using-k6/options#list-of-options
 export let options = {
     // A number specifying the number of VUs to run concurrently
-    vus: 250,
+    vus: 100,
     // A list of objects that specify the target number of VUs to ramp up or down;
     // shortcut option for a single scenario with a ramping VUs executor
     stages: [
-        { duration: "40s", target: 300 },
+        { duration: "30s", target: 300 },
         // { duration: "60s", target: 2500 },
         // { duration: "120s", target: 8000 },
         // { duration: "120s", target: 2000 },
@@ -36,7 +36,8 @@ export let options = {
     throw: true,
 };
 
-const traderURL = __ENV.TRADER_URL ? __ENV.TRADER_URL : 'http://localhost:4000'
+const traderURL = 'http://localhost:17420'
+// const traderURL = __ENV.TRADER_URL ? __ENV.TRADER_URL : 'http://localhost:4000'
 
 export default function() {
     let req_data = {

@@ -7,11 +7,13 @@ import (
 
 	"ptcg_trader/internal/config"
 	"ptcg_trader/internal/errors"
+	"ptcg_trader/internal/pubsub/stan"
 	"ptcg_trader/internal/redis"
 	"ptcg_trader/pkg/model"
 	"ptcg_trader/pkg/repository"
 	"ptcg_trader/pkg/service"
 
+	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 	"go.uber.org/fx"
 )
@@ -20,23 +22,26 @@ import (
 type ServiceParams struct {
 	fx.In
 
-	Repo  repository.Repositorier
-	Match service.Matcher
-	Redis redis.Redis
+	Repo       repository.Repositorier
+	StanClient *stan.Client
+	Redis      redis.Redis
+	Match      service.Matcher
 }
 
 type svc struct {
 	repo  repository.Repositorier
-	match service.Matcher
+	stan  *stan.Client
 	redis redis.Redis
+	match service.Matcher
 }
 
 // NewService support DI tool to create a new service instance
 func NewService(params ServiceParams) service.TraderServicer {
 	return &svc{
 		repo:  params.Repo,
-		match: params.Match,
+		stan:  params.StanClient,
 		redis: params.Redis,
+		match: params.Match,
 	}
 }
 
@@ -95,11 +100,14 @@ func (svc *svc) CreateOrder(ctx context.Context, order *model.Order) error {
 	var err error
 
 	switch config.Config().Trader.Strategy {
+	case config.TraderStrategyDatabaseRowLock:
+		err = svc.createOrderByDatabaseRowLock(ctx, order)
+
 	case config.TraderStrategyRedisLock:
 		err = svc.createOrderByRedisLock(ctx, order)
 
-	case config.TraderStrategyDatabaseRowLock:
-		err = svc.createOrderByDatabaseRowLock(ctx, order)
+	case config.TraderStrategyAsyncInMemoryMatching:
+		err = svc.createOrderByAsyncMemoryMatch(ctx, order)
 
 	default: // default use DatabaseRowLock
 		err = svc.createOrderByDatabaseRowLock(ctx, order)
@@ -237,6 +245,40 @@ func (svc *svc) createOrderByRedisLock(ctx context.Context, order *model.Order) 
 		return nil
 	})
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (svc *svc) createOrderByAsyncMemoryMatch(ctx context.Context, order *model.Order) error {
+	// insret order into database and publish it to the message queue
+	err := svc.repo.Transaction(ctx, func(ctx context.Context, txRepo repository.Repositorier) error {
+		err := txRepo.CreateOrder(ctx, order)
+		if err != nil {
+			return err
+		}
+
+		// we classify all nats-streaming channels into N channels, channelID = id % N
+		// example for N=4:
+		//   topic.1 => topic.1
+		//   topic.2 => topic.2
+		//   topic.5 => topic.1
+		// https://github.com/nats-io/nats-streaming-server/issues/524
+		channelCount  := int64(4)
+		channelID := fmt.Sprintf("%s.%d", model.TopicCreateOrder, order.ItemID%channelCount)
+		err = svc.stan.Pub(ctx, model.TopicCreateOrder, order)
+		if err != nil {
+			log.Ctx(ctx).Error().
+				Str("topic", channelID).
+				Msg("failed to publish topic to nats streaming")
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		log.Ctx(ctx).Warn().Msgf("failed to create order on TraderStrategyAsyncInMemoryMatching mode: %+v", err)
 		return err
 	}
 
