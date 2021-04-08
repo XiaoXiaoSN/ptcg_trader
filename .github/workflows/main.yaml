@@ -65,7 +65,7 @@ jobs:
         with:
           helm: helm3
           release: trader
-          chart: ./charts/trader
+          chart: ./deploy/helm/charts/trader
           values: '${{ secrets.HELM_TRADER_VALUES }}'
           namespace: ptcg
           track: stable
