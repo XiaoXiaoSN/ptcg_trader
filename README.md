@@ -82,4 +82,4 @@ You must complete basic requirements within 2 weeks. You could ask for 2 more we
 
 
 服務架構包含：
-![](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://github.com/XiaoXiaoSN/ptcg_trader/blob/master/documents/architecture.puml)
+![](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/XiaoXiaoSN/ptcg_trader/master/documents/architecture.puml)
