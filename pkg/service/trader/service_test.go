@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"ptcg_trader/internal/errors"
+	"ptcg_trader/internal/pubsub/stan"
 	"ptcg_trader/pkg/model"
 	"ptcg_trader/pkg/service"
 	"ptcg_trader/pkg/service/trader"
@@ -39,6 +40,10 @@ func (s *svcTestSuite) SetupSuite() {
 			mocks.ImplMockRedis,
 			mocks.ImplMockMatcher,
 			trader.NewService,
+			// TODO: bad implement! you should mock it
+			func() *stan.Client {
+				return &stan.Client{}
+			},
 		),
 		fx.Populate(
 			&s.mockRepo,

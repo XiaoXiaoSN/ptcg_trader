@@ -18,6 +18,10 @@ import (
 	"go.uber.org/fx"
 )
 
+// MockClient ...
+// TODO: should use interface here !
+type MockClient interface {}
+
 // NewClient ...
 func NewClient(cfg config.StanConfig) (*Client, error) {
 	var client Client

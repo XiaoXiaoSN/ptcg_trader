@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"testing"
 
 	"ptcg_trader/internal/config"
@@ -16,6 +17,11 @@ import (
 )
 
 func TestHandler_CreateOrderEndpoint(t *testing.T) {
+	if flag := os.Getenv("DOCKER_TEST"); flag == "" {
+		t.Skip()
+		return
+	}
+
 	var matcherSvc service.Matcher
 
 	_ = fx.New(
