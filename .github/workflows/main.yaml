@@ -53,7 +53,7 @@ jobs:
             --platform linux/amd64  . \
             -f deploy/docker/trader.dockerfile
 
-  helm-deploy:
+  helm-deploy-trader:
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -67,6 +67,25 @@ jobs:
           release: trader
           chart: ./deploy/helm/charts/trader
           values: '${{ secrets.HELM_TRADER_VALUES }}'
+          namespace: ptcg
+          track: stable
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+
+  helm-deploy-matcher:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: helm-deploy
+        uses: 'deliverybot/helm@v1'
+        with:
+          helm: helm3
+          release: matcher
+          chart: ./deploy/helm/charts/matcher
+          values: '${{ secrets.HELM_MATCHER_VALUES }}'
           namespace: ptcg
           track: stable
         env:
