@@ -252,6 +252,13 @@ func (svc *svc) createOrderByRedisLock(ctx context.Context, order *model.Order) 
 }
 
 func (svc *svc) createOrderByAsyncMemoryMatch(ctx context.Context, order *model.Order) error {
+	// save order~
+	err := svc.repo.CreateOrder(ctx, order)
+	if err != nil {
+		log.Ctx(ctx).Error().Msgf("failed to create order: %+v", err)
+		return err
+	}
+
 	// we classify all nats-streaming channels into N channels, channelID = id % N
 	// example for N=4:
 	//   topic.1 => topic.1
@@ -260,7 +267,7 @@ func (svc *svc) createOrderByAsyncMemoryMatch(ctx context.Context, order *model.
 	// https://github.com/nats-io/nats-streaming-server/issues/524
 	channelCount := int64(4)
 	channelID := fmt.Sprintf("%s.%d", model.TopicCreateOrder, order.ItemID%channelCount)
-	err := svc.stan.Pub(ctx, channelID, order)
+	err = svc.stan.Pub(ctx, channelID, order)
 	if err != nil {
 		log.Ctx(ctx).Error().
 			Str("topic", channelID).

@@ -118,12 +118,6 @@ func (svc *svc) AsyncMatchOrders(ctx context.Context, order *model.Order) error 
 
 	// not matched, insert into rb-tree
 	if makeSideOrderEngine.Tree.Size() == 0 {
-		err := svc.repo.CreateOrder(ctx, order)
-		if err != nil {
-			log.Ctx(ctx).Error().Msgf("failed to create order: %+v", err)
-			return err
-		}
-
 		takeSideOrderEngine.Append(order)
 		return nil
 	}
