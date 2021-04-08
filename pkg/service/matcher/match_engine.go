@@ -39,6 +39,30 @@ func (oe *OrderEngine) Append(order *model.Order) {
 	oe.Tree.Put(order.Price, timeTree)
 }
 
+// String make OrderEngine readable
+func (oe *OrderEngine) String() string {
+	if oe == nil || oe.Tree == nil {
+		return ""
+	}
+	return oe.Tree.String()
+}
+
+// Size return the actual size
+func (oe *OrderEngine) Size() int {
+	if oe == nil || oe.Tree == nil {
+		return 0
+	}
+
+	var size int
+
+	it := oe.Tree.Iterator()
+	for it.Next() {
+		orderTree := it.Value().(*rbt.Tree)
+		size += orderTree.Size()
+	}
+	return size
+}
+
 // orderComparator compare order's parice and creating time
 func orderComparator(a, b interface{}) int {
 	aWeight := a.(decimal.Decimal)

@@ -70,7 +70,7 @@ func (svc *svc) MatchOrders(ctx context.Context, order *model.Order) (*model.Ord
 // loadUncompletedOrders from database load orders in memory
 func (svc *svc) loadUncompletedOrders(ctx context.Context) error {
 	log.Ctx(ctx).Info().Msg("loadUncompletedOrders start")
-	defer log.Ctx(ctx).Info().Msg("loadUncompletedOrders done")
+	defer log.Ctx(ctx).Info().Msg("loadUncompletedOrders complate.")
 
 	query := model.OrderQuery{
 		Status:  model.OrderStatusProgress,
@@ -102,6 +102,18 @@ func (svc *svc) loadUncompletedOrders(ctx context.Context) error {
 		}
 	}
 
+	// statistics orderEngines
+	for itemID, oe := range svc.sellOrderEngines {
+		log.Ctx(ctx).Debug().
+			Int64("item_id", itemID).
+			Msgf("sellOrderEnine has %d orders", oe.Size())
+	}
+	for itemID, oe := range svc.buyOrderEngines {
+		log.Ctx(ctx).Debug().
+			Int64("item_id", itemID).
+			Msgf("buyOrderEnine has %d orders", oe.Size())
+	}
+
 	close(svc.readyFlag)
 	return nil
 }
@@ -116,24 +128,33 @@ func (svc *svc) AsyncMatchOrders(ctx context.Context, order *model.Order) error 
 		return errors.WithMessage(errors.ErrBadRequest, "unknown order type")
 	}
 
-	// not matched, insert into rb-tree
-	if makeSideOrderEngine.Tree.Size() == 0 {
-		takeSideOrderEngine.Append(order)
-		return nil
+	err := svc.asyncMatchOrders(ctx, order, makeSideOrderEngine, takeSideOrderEngine)
+	if err != nil {
+		log.Error().Msgf("excute asyncMatchOrders fail: %+v", err)
 	}
-
-	svc.asyncMatchOrders(ctx, order, makeSideOrderEngine)
 
 	return nil
 }
 
-func (svc *svc) asyncMatchOrders(ctx context.Context, takeOrder *model.Order, makeSideOrderEngine *OrderEngine) (err error) {
+func (svc *svc) asyncMatchOrders(ctx context.Context, takeOrder *model.Order, makeSideOrderEngine, takeSideOrderEngine *OrderEngine) (err error) {
 	defer func() {
-		recoverError()
-		if err != nil {
-			log.Error().Msgf("asyncMatchOrders fail: %+v", err)
+		if _err := recoverPanic(); _err != nil {
+			err = _err
 		}
 	}()
+
+	logger := log.Ctx(ctx).With().
+		Int64("take_order_id", takeOrder.ID).
+		Str("take_order_price", takeOrder.Price.String()).
+		Int8("take_order_side", int8(takeOrder.OrderType)).
+		Logger()
+
+	// not matched, insert into rb-tree
+	if makeSideOrderEngine.Tree.Size() == 0 {
+		logger.Debug().Msg("The makeOrderEngine is empty")
+		takeSideOrderEngine.Append(takeOrder)
+		return nil
+	}
 
 	// takeOrder matched a makeOrder, pop it and update their db status
 	var makeOrder *model.Order
@@ -143,27 +164,42 @@ func (svc *svc) asyncMatchOrders(ctx context.Context, takeOrder *model.Order, ma
 	)
 	switch takeOrder.OrderType {
 	case model.OrderTypeBuy:
-		// buy order, find the order with lowest price
+		// buy order:
+		// find that there exists an uncompleted sell order, whose price is the lowest one
+		// among all uncompleted sell orders and less than or equal to the price of the buy order.
 		orderNode := makeSideOrderEngine.Tree.Left()
-		orderTreeKey = orderNode.Key
+		if orderNode.Key.(decimal.Decimal).LessThanOrEqual(takeOrder.Price) {
+			orderTreeKey = orderNode.Key
 
-		timeTree = orderNode.Value.(*rbt.Tree)
-		timeNode := timeTree.Left()
-		timeTreeKey = timeNode.Key
-		makeOrder = timeNode.Value.(*model.Order)
+			timeTree = orderNode.Value.(*rbt.Tree)
+			timeNode := timeTree.Left()
+			timeTreeKey = timeNode.Key
+			makeOrder = timeNode.Value.(*model.Order)
+		}
 
 	case model.OrderTypeSell:
-		// sell order, find the order with highest price
+		// sell order:
+		// there exists an uncompleted buy order, whose price is the highest one
+		// among all uncompleted buy orders and greater than or equal to the price of the sell order.
 		orderNode := makeSideOrderEngine.Tree.Right()
-		orderTreeKey = orderNode.Key
+		if orderNode.Key.(decimal.Decimal).GreaterThanOrEqual(takeOrder.Price) {
+			orderTreeKey = orderNode.Key
 
-		timeTree = orderNode.Value.(*rbt.Tree)
-		timeNode := timeTree.Left()
-		timeTreeKey = timeNode.Key
-		makeOrder = timeNode.Value.(*model.Order)
+			timeTree = orderNode.Value.(*rbt.Tree)
+			timeNode := timeTree.Left()
+			timeTreeKey = timeNode.Key
+			makeOrder = timeNode.Value.(*model.Order)
+		}
 
 	default:
 		return errors.WithMessagef(errors.ErrBadRequest, "Unknown order type: %d", takeOrder.OrderType)
+	}
+
+	// the input take order not matched any make order, put it into orderEngine
+	if makeOrder == nil {
+		logger.Debug().Msg("There are not matched any order in the makeOrderEngine")
+		takeSideOrderEngine.Append(takeOrder)
+		return nil
 	}
 
 	// order matched! change order status and create a transaction record
@@ -204,6 +240,12 @@ func (svc *svc) asyncMatchOrders(ctx context.Context, takeOrder *model.Order, ma
 	if err != nil {
 		return err
 	}
+
+	logger.Debug().
+		Int64("make_order_id", makeOrder.ID).
+		Str("make_order_price", makeOrder.Price.String()).
+		Int8("make_order_side", int8(makeOrder.OrderType)).
+		Msg("takeOrder matched a make order in the makeOrderEngine")
 
 	// remove makeOrder from makeSideOrderEngine
 	if timeTree.Size() == 1 {
@@ -247,7 +289,7 @@ func (svc *svc) getOrderEngines(ctx context.Context, order *model.Order) (takeSi
 	return takeSide, makeSide
 }
 
-func recoverError() {
+func recoverPanic() error {
 	if r := recover(); r != nil {
 		var msg string
 		for i := 2; ; i++ {
@@ -257,6 +299,7 @@ func recoverError() {
 			}
 			msg = msg + fmt.Sprintf("%s:%d\n", file, line)
 		}
-		log.Error().Msgf("%s\n↧↧↧↧↧↧ PANIC ↧↧↧↧↧↧\n%s↥↥↥↥↥↥ PANIC ↥↥↥↥↥↥", r, msg)
+		return fmt.Errorf("%s\n↧↧↧↧↧↧ PANIC ↧↧↧↧↧↧\n%s↥↥↥↥↥↥ PANIC ↥↥↥↥↥↥", r, msg)
 	}
+	return nil
 }

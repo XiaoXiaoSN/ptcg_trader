@@ -34,7 +34,7 @@ func RegisterChannel(handler *Handler) error {
 	logger := log.With().Str("handler", "stan").Logger()
 	ctx := logger.WithContext(context.Background())
 
-	var indexKeysStr string = "1,2,3,4"
+	var indexKeysStr string = "0,1,2,3"
 	if idx := os.Getenv("INDEX"); idx != "" {
 		indexKeysStr = idx
 	}

@@ -17,7 +17,7 @@ import (
 )
 
 func TestHandler_CreateOrderEndpoint(t *testing.T) {
-	if flag := os.Getenv("DOCKER_TEST"); flag == "" {
+	if flag := os.Getenv("E2E_TEST"); flag == "" {
 		t.Skip()
 		return
 	}
@@ -65,9 +65,7 @@ func TestHandler_CreateOrderEndpoint(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			fields: fields{
-				matcherSvc: matcherSvc,
-			},
+			fields: fields{matcherSvc: matcherSvc},
 			args: args{
 				ctx: context.Background(),
 				data: json.RawMessage(`{
@@ -77,22 +75,54 @@ func TestHandler_CreateOrderEndpoint(t *testing.T) {
 					"price": "3.8"
 				}`),
 			},
-			wantErr: false,
 		},
 		{
-			fields: fields{
-				matcherSvc: matcherSvc,
-			},
+			fields: fields{matcherSvc: matcherSvc},
 			args: args{
 				ctx: context.Background(),
 				data: json.RawMessage(`{
 					"id": 2,
 					"item_id": 1,
-					"order_type": 2,
+					"order_type": 1,
 					"price": "3.4"
 				}`),
 			},
-			wantErr: false,
+		},
+		{
+			fields: fields{matcherSvc: matcherSvc},
+			args: args{
+				ctx: context.Background(),
+				data: json.RawMessage(`{
+					"id": 3,
+					"item_id": 1,
+					"order_type": 1,
+					"price": "3.4"
+				}`),
+			},
+		},
+		{
+			fields: fields{matcherSvc: matcherSvc},
+			args: args{
+				ctx: context.Background(),
+				data: json.RawMessage(`{
+					"id": 4,
+					"item_id": 1,
+					"order_type": 2,
+					"price": "3.5"
+				}`),
+			},
+		},
+		{
+			fields: fields{matcherSvc: matcherSvc},
+			args: args{
+				ctx: context.Background(),
+				data: json.RawMessage(`{
+					"id": 5,
+					"item_id": 1,
+					"order_type": 2,
+					"price": "5"
+				}`),
+			},
 		},
 	}
 	for _, tt := range tests {
