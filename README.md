@@ -81,5 +81,5 @@ You must complete basic requirements within 2 weeks. You could ask for 2 more we
 - [Github Actions](https://github.com/features/actions) 持續部署。自動建置 docker 容器、部署 Helm release，然後他也是免費ㄉ
 
 
-服務架構包含：
-![](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://github.com/XiaoXiaoSN/ptcg_trader/blob/master/documents/architecture.puml)
+### 服務架構包含：
+![](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/XiaoXiaoSN/ptcg_trader/master/documents/architecture.puml)
