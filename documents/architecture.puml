@@ -1,0 +1,19 @@
+@startuml PTCG-Trader
+
+actor users
+frame k8s_cluster {
+    left to right direction
+
+    queue nats_streaming
+    collections trader
+    collections matcher
+    database postgreSQL
+}
+
+
+users --> trader: create order
+trader -> nats_streaming
+nats_streaming -> matcher
+matcher -- postgreSQL
+
+@enduml
