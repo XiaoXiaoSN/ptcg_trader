@@ -79,30 +79,31 @@ affinity: {}
 
 secret:
   config: |
-    # NOTICE: JUST AN EXAMPLE, YOU SHOULD REPLACE IT
-
-    env: dev
+    env: prod
 
     log:
-      level: "debug" # trace debug info warn error fatal panic
-      environment: dev
+      level: "info"
+      environment: prod
       format: "console"
       app_id: ptcg_trader
+      no_color: true
 
     database:
-      debug: false
-      host: localhost
+      debug: true
+      host: postgres-postgresql-headless.postgres.svc.cluster.local
       port: 5432
-      username: local
-      password: local
+      username: not_local
+      password: not_local
       db_name: ptcg
+      max_idle_conns: 2
+      max_open_conns: 5
       type: postgres
       search_path: "trader"
       ssl_enable: false
 
     redis:
-      addresses: [ "localhost:6379" ]
-      password: ""
+      addresses: [ "redis-headless.redis.svc.cluster.local:6379" ]
+      password: "why_we_need_password"
       max_retries: 5
       pool_size: 5
       db: 1
@@ -110,3 +111,10 @@ secret:
     http:
       debug: true
       address: ":17420"
+
+    stan:
+      debug: true
+      address: ptcg-stan.stan.svc.cluster.local:4222
+      cluster_id: "ptcg-stan"
+      client_id: "trader"
+      group_name: "ptcg"
