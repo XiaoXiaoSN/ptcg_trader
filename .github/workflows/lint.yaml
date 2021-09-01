@@ -1,0 +1,26 @@
+name: reviewdog
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  reviewdog-ci-lint:
+    name: reviewdog - golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v2
+
+  golangci-lint:
+    name: golangci - golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
