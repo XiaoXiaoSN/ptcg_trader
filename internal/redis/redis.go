@@ -21,7 +21,7 @@ type Redis interface {
 }
 
 type _redis struct {
-	ctx context.Context
+	// ctx context.Context // field `ctx` is unused (unused)
 
 	*redis.Client
 }

@@ -162,9 +162,10 @@ type createOrderReq struct {
 	Price     string          `json:"price" gorm:"column:price"`
 }
 
-type createOrderResp struct {
-	Data model.Order `json:"data"`
-}
+// NOTE: `createOrderResp` is unused (deadcode)
+// type createOrderResp struct {
+// 	Data model.Order `json:"data"`
+// }
 
 // @Title getOrderEndpoint
 // @Description 建立訂單

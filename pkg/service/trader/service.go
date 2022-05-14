@@ -193,7 +193,9 @@ func (svc *svc) createOrderByRedisLock(ctx context.Context, order *model.Order) 
 	if !ok {
 		return errors.Wrap(errors.ErrDataConflict, "Order failed, please try again")
 	}
-	defer svc.redis.RedisUnlock(ctx, lockKey, "")
+	defer func() {
+		_ = svc.redis.RedisUnlock(ctx, lockKey, "")
+	}()
 
 	// order matched! change order status and create a transaction record
 	err = svc.repo.Transaction(ctx, func(ctx context.Context, txRepo repository.Repositorier) error {

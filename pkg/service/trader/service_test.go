@@ -24,11 +24,11 @@ func Test_TraderService(t *testing.T) {
 type svcTestSuite struct {
 	suite.Suite
 
-	ctx         context.Context
-	svc         service.TraderServicer
-	mockMatcher *mocks.MockMatcher
-	mockRepo    *mocks.MockRepository
-	mockRedis   *mocks.MockRedis
+	ctx context.Context
+	svc service.TraderServicer
+	// mockMatcher *mocks.MockMatcher // NOTE: field is unused
+	mockRepo  *mocks.MockRepository
+	mockRedis *mocks.MockRedis
 }
 
 func (s *svcTestSuite) SetupSuite() {

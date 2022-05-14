@@ -31,5 +31,4 @@ func httpErrorHandler(err error, c echo.Context) {
 	httpErr := errors.GetHTTPError(causeErr)
 
 	_ = c.JSON(httpErr.Status, httpErr)
-	return
 }

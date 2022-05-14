@@ -43,7 +43,12 @@ func NewMatch(params MatchParams) service.Matcher {
 	}
 
 	ctx := log.Logger.WithContext(context.Background())
-	go svc.loadUncompletedOrders(ctx)
+	go func() {
+		err := svc.loadUncompletedOrders(ctx)
+		if err != nil {
+			log.Ctx(ctx).Error().Msgf("load uncompleted order failed: %+v", err)
+		}
+	}()
 
 	return svc
 }

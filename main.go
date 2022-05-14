@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	_ "net/http/pprof"
 	"os"
 	"time"
 
@@ -19,6 +18,7 @@ func init() {
 }
 
 func main() {
+	// import _ "net/http/pprof"
 	// go func() {
 	// 	log.Printf("listen http port 6060: %+v", http.ListenAndServe("localhost:6060", nil))
 	// }()

@@ -7,8 +7,6 @@ import (
 	"ptcg_trader/internal/errors"
 	"ptcg_trader/pkg/repository"
 
-	"github.com/go-sql-driver/mysql"
-	"github.com/jackc/pgconn"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -142,19 +140,20 @@ func notFoundOrInternalError(err error) error {
 	return errors.Wrap(errors.ErrInternalError, err.Error())
 }
 
-func duplicateOrInternalError(err error) error {
-	if err == nil {
-		return nil
-	}
-	switch e := err.(type) {
-	case *mysql.MySQLError:
-		if e.Number == 1062 {
-			return errors.ErrResourceAlreadyExists
-		}
-	case *pgconn.PgError:
-		if e.Code == "23505" {
-			return errors.ErrResourceAlreadyExists
-		}
-	}
-	return errors.Wrap(errors.ErrInternalError, err.Error())
-}
+// NOTE: `duplicateOrInternalError` is unused (deadcode)
+// func duplicateOrInternalError(err error) error {
+// 	if err == nil {
+// 		return nil
+// 	}
+// 	switch e := err.(type) {
+// 	case *mysql.MySQLError:
+// 		if e.Number == 1062 {
+// 			return errors.ErrResourceAlreadyExists
+// 		}
+// 	case *pgconn.PgError:
+// 		if e.Code == "23505" {
+// 			return errors.ErrResourceAlreadyExists
+// 		}
+// 	}
+// 	return errors.Wrap(errors.ErrInternalError, err.Error())
+// }
