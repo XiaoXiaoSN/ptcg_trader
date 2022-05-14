@@ -1,5 +1,6 @@
 # PTCG Trader
-[![Build Status](https://travis-ci.com/XiaoXiaoSN/ptcg_trader.svg?branch=master)](https://travis-ci.com/XiaoXiaoSN/ptcg_trader)
+![build](https://github.com/XiaoXiaoSN/ptcg_trader/actions/workflows/main.yaml/badge.svg)
+![CI passed](https://github.com/XiaoXiaoSN/ptcg_trader/actions/workflows/lint.yaml/badge.svg)
 
 Please design and implement a backend system for an online trading platform of Pokémon Trading Card Game.
 - This online trading platform trades 4 kinds of cards only: Pikachu, Bulbasaur, Charmander, and Squirtle.
