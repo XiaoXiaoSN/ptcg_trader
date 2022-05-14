@@ -2,8 +2,9 @@ package gormrepo_test
 
 import (
 	"context"
-	"ptcg_trader/pkg/model"
 	"regexp"
+
+	"ptcg_trader/pkg/model"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/shopspring/decimal"

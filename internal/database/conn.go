@@ -5,7 +5,7 @@ import (
 
 	"ptcg_trader/internal/config"
 
-	"github.com/cenk/backoff"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/rs/zerolog/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"

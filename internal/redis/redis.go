@@ -7,7 +7,7 @@ import (
 	"ptcg_trader/internal/config"
 	"ptcg_trader/internal/errors"
 
-	"github.com/cenk/backoff"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/go-redis/redis/v8"
 	"github.com/rs/zerolog/log"
 )

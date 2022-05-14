@@ -2,8 +2,9 @@ package gormrepo_test
 
 import (
 	"context"
-	"ptcg_trader/pkg/model"
 	"regexp"
+
+	"ptcg_trader/pkg/model"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/mikunalpha/paws"
@@ -106,7 +107,7 @@ func (s *repoTestSuite) Test_repository_CountItems() {
 
 			prepareFn: func(want int64, query model.ItemQuery) {
 				row := sqlmock.NewRows([]string{"count"}).AddRow(want)
-				sqlStmt := `SELECT count(1) FROM "items"`
+				sqlStmt := `SELECT count(*) FROM "items"`
 				s.SQLMock.ExpectQuery(regexp.QuoteMeta(sqlStmt)).
 					WillReturnRows(row)
 			},
@@ -286,7 +287,7 @@ func (s *repoTestSuite) Test_repository_CountOrders() {
 
 			prepareFn: func(want int64, query model.OrderQuery) {
 				row := sqlmock.NewRows([]string{"count"}).AddRow(want)
-				sqlStmt := `SELECT count(1) FROM "orders"`
+				sqlStmt := `SELECT count(*) FROM "orders"`
 				s.SQLMock.ExpectQuery(regexp.QuoteMeta(sqlStmt)).
 					WillReturnRows(row)
 			},
@@ -477,7 +478,7 @@ func (s *repoTestSuite) Test_repository_CountTransactions() {
 
 			prepareFn: func(want int64, query model.TransactionQuery) {
 				row := sqlmock.NewRows([]string{"count"}).AddRow(want)
-				sqlStmt := `SELECT count(1) FROM "transactions"`
+				sqlStmt := `SELECT count(*) FROM "transactions"`
 				s.SQLMock.ExpectQuery(regexp.QuoteMeta(sqlStmt)).
 					WillReturnRows(row)
 			},

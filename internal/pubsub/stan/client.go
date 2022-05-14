@@ -11,7 +11,7 @@ import (
 	"ptcg_trader/internal/ctxutil"
 	"ptcg_trader/internal/errors"
 
-	"github.com/cenk/backoff"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/stan.go"
 	"github.com/rs/zerolog/log"

@@ -49,13 +49,13 @@ swagger.gen:
 mock.gen: mock.gen.svc.matcher mock.gen.repo mock.gen.redis
 
 mock.gen.svc.matcher:
-	# go get github.com/vektra/mockery/.../
-	mockery -dir pkg/service -name Matcher -filename mock_svc_matcher.go --structname MockMatcher -output test/mocks
+	# go install github.com/vektra/mockery/v2@latest
+	mockery --dir pkg/service --name Matcher --filename mock_svc_matcher.go --structname MockMatcher --output test/mocks
 
 mock.gen.repo:
-	# go get github.com/vektra/mockery/.../
-	mockery -dir pkg/repository -name Repositorier -filename mock_repository.go --structname MockRepository -output test/mocks
+	# go install github.com/vektra/mockery/v2@latest
+	mockery --dir pkg/repository --name Repositorier --filename mock_repository.go --structname MockRepository --output test/mocks
 
 mock.gen.redis:
-	# go get github.com/vektra/mockery/.../
-	mockery -dir internal/redis -name Redis -filename mock_redis.go --structname MockRedis -output test/mocks
+	# go install github.com/vektra/mockery/v2@latest
+	mockery --dir internal/redis --name Redis --filename mock_redis.go --structname MockRedis --output test/mocks
