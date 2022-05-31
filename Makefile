@@ -31,14 +31,16 @@ gencode: swagger.gen mock.gen
 # lint code
 ##############################
 
-.PHONY: lint.go lint.gosec lint.all
+.PHONY: lint.prepare lint.go lint.gosec lint.all
+
+lint.prepare:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/securego/gosec/v2/cmd/gosec@latest
 
 lint.go:
-	# go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	golangci-lint run ./...
 
 lint.sec:
-	# go install github.com/securego/gosec/v2/cmd/gosec@latest
 	gosec ./...
 
 lint.all: lint.go lint.sec
